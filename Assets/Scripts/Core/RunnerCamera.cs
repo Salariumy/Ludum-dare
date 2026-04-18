@@ -8,9 +8,9 @@ public class RunnerCamera : MonoBehaviour
     [Header("速度")]
     [SerializeField] private float scrollSpeed = 4f;
 
-    [Header("跟随")]
+    [Header("Follow")]
     [SerializeField] private Transform player;
-    [SerializeField] private float     verticalSmooth = 5f;
+    [SerializeField] private float fixedY = 0f;  // 固定Y坐标
 
     public float CurrentSpeed => scrollSpeed;
 
@@ -25,14 +25,10 @@ public class RunnerCamera : MonoBehaviour
     void LateUpdate()
     {
         if (player == null) return;
-
-        // 水平：跟随玩家X（玩家自动移动，摄像机跟着走）
+        // 水平：跟随玩家X
         float newX = player.position.x + 2f;
-
-        // 垂直：平滑跟随
-        float newY = Mathf.Lerp(transform.position.y, player.position.y, verticalSmooth * Time.deltaTime);
-
-        transform.position = new Vector3(newX, newY, transform.position.z);
+        // 垂直：固定不变
+        transform.position = new Vector3(newX, fixedY, transform.position.z);
     }
 
     public float RightEdgeX => transform.position.x + cam.orthographicSize * cam.aspect;

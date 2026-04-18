@@ -83,12 +83,21 @@ public class TerrainChunker : MonoBehaviour
     /// <summary>清除旧物体，随机生成新障碍物和金币</summary>
     void RespawnContent(Transform chunk, float chunkStartX)
     {
-        // 清除上一轮
+        // 回收上一轮物体到对象池
         if (spawnedObjects.ContainsKey(chunk))
         {
             foreach (var obj in spawnedObjects[chunk])
             {
-                if (obj != null) Destroy(obj);
+                if (obj != null)
+                {
+                    // 移除动态添加的 FogCover
+                    var fog = obj.GetComponent<FogCover>();
+                    if (fog) Destroy(fog);
+                    if (ObjectPool.Instance)
+                        ObjectPool.Instance.Return(obj);
+                    else
+                        Destroy(obj);
+                }
             }
             spawnedObjects[chunk].Clear();
         }
@@ -102,7 +111,9 @@ public class TerrainChunker : MonoBehaviour
             Vector3 pos = new Vector3(x, groundY, 0f);
             if (obstaclePrefab)
             {
-                var obj = Instantiate(obstaclePrefab, pos, Quaternion.identity, chunk);
+                var obj = ObjectPool.Instance
+                    ? ObjectPool.Instance.Get(obstaclePrefab, pos, Quaternion.identity, chunk)
+                    : Instantiate(obstaclePrefab, pos, Quaternion.identity, chunk);
                 TryAddFog(obj);
                 spawnedObjects[chunk].Add(obj);
             }
@@ -117,7 +128,9 @@ public class TerrainChunker : MonoBehaviour
             Vector3 pos = new Vector3(x, y, 0f);
             if (coinPrefab)
             {
-                var obj = Instantiate(coinPrefab, pos, Quaternion.identity, chunk);
+                var obj = ObjectPool.Instance
+                    ? ObjectPool.Instance.Get(coinPrefab, pos, Quaternion.identity, chunk)
+                    : Instantiate(coinPrefab, pos, Quaternion.identity, chunk);
                 TryAddFog(obj);
                 spawnedObjects[chunk].Add(obj);
             }
@@ -128,7 +141,9 @@ public class TerrainChunker : MonoBehaviour
         {
             float x = Random.Range(chunkStartX + margin, chunkStartX + chunkWidth - margin);
             Vector3 pos = new Vector3(x, groundY, 0f);
-            var obj = Instantiate(chestPrefab, pos, Quaternion.identity, chunk);
+            var obj = ObjectPool.Instance
+                ? ObjectPool.Instance.Get(chestPrefab, pos, Quaternion.identity, chunk)
+                : Instantiate(chestPrefab, pos, Quaternion.identity, chunk);
             spawnedObjects[chunk].Add(obj);
         }
     }

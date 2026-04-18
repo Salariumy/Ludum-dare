@@ -11,7 +11,7 @@ public class Coin : MonoBehaviour
 
     private Vector3 startPos;
 
-    void Start()
+    void OnEnable()
     {
         startPos = transform.position;
     }

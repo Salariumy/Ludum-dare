@@ -36,6 +36,9 @@ public class SignalWave : MonoBehaviour
 
             yield return null;
         }
-        Destroy(gameObject);
+        if (ObjectPool.Instance)
+            ObjectPool.Instance.Return(gameObject);
+        else
+            Destroy(gameObject);
     }
 }

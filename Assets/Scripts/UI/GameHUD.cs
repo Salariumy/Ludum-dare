@@ -52,7 +52,7 @@ public class GameHUD : MonoBehaviour
     {
         if (coinText)     coinText.text     = "0";
         if (distanceText) distanceText.text = "0 m";
-        if (frequencyText) frequencyText.text = "高频 - 信号模式";
+        if (frequencyText) frequencyText.text = "HIGH - SIGNAL MODE";
         UpdateHearts(3);
         UpdateCrowns(0);
         if (shieldIndicator) shieldIndicator.SetActive(false);
@@ -81,8 +81,8 @@ public class GameHUD : MonoBehaviour
         var freq = (SignalFrequency)data;
         if (frequencyText)
             frequencyText.text = freq == SignalFrequency.High
-                ? "高频 - 信号模式"
-                : "低频 - 攻击模式";
+                ? "HIGH - SIGNAL MODE"
+                : "LOW - ATTACK MODE";
     }
 
     void UpdateHearts(int currentHP)

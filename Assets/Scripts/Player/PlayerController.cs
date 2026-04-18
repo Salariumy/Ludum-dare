@@ -149,7 +149,9 @@ public class PlayerController : MonoBehaviour
             if (fogManager) fogManager.EmitPulse(transform.position, signalRadius);
             if (signalWavePrefab)
             {
-                var wave = Instantiate(signalWavePrefab, transform.position, Quaternion.identity);
+                var wave = ObjectPool.Instance
+                    ? ObjectPool.Instance.Get(signalWavePrefab, transform.position, Quaternion.identity)
+                    : Instantiate(signalWavePrefab, transform.position, Quaternion.identity);
                 var sw = wave.GetComponent<SignalWave>();
                 if (sw) sw.Init(signalRadius);
             }
@@ -163,7 +165,12 @@ public class PlayerController : MonoBehaviour
         {
             fireTimer = fireRate;
             if (bulletPrefab && firePoint)
-                Instantiate(bulletPrefab, firePoint.position, Quaternion.identity);
+            {
+                if (ObjectPool.Instance)
+                    ObjectPool.Instance.Get(bulletPrefab, firePoint.position, Quaternion.identity);
+                else
+                    Instantiate(bulletPrefab, firePoint.position, Quaternion.identity);
+            }
         }
     }
 
@@ -228,7 +235,10 @@ public class PlayerController : MonoBehaviour
         if (other.CompareTag("Coin"))
         {
             CollectCoin();
-            Destroy(other.gameObject);
+            if (ObjectPool.Instance)
+                ObjectPool.Instance.Return(other.gameObject);
+            else
+                Destroy(other.gameObject);
         }
         // LevelEnd 由 LevelEndTrigger 脚本独立广播事件，这里不重复发布
         // Crown 和 Chest 自己处理碰撞并广播事件，PlayerController 通过 EventBus 监听

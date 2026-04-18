@@ -9,13 +9,25 @@ public class Bullet : MonoBehaviour
     [SerializeField] private float speed    = 12f;
     [SerializeField] private float lifeTime = 3f;
 
-    void Start()
+    private float timer;
+
+    void OnEnable()
     {
-        Destroy(gameObject, lifeTime);
+        timer = lifeTime;
+    }
+
+    void ReturnToPool()
+    {
+        if (ObjectPool.Instance)
+            ObjectPool.Instance.Return(gameObject);
+        else
+            Destroy(gameObject);
     }
 
     void Update()
     {
+        timer -= Time.deltaTime;
+        if (timer <= 0f) { ReturnToPool(); return; }
         transform.Translate(Vector3.right * speed * Time.deltaTime);
     }
 
@@ -27,13 +39,13 @@ public class Bullet : MonoBehaviour
             var fog = other.GetComponent<FogCover>();
             if (fog != null && !fog.IsRevealed)
             {
-                Destroy(gameObject);
+                ReturnToPool();
                 return;
             }
 
             var obs = other.GetComponent<Obstacle>();
             if (obs) obs.onDestr();
-            Destroy(gameObject);
+            ReturnToPool();
         }
     }
 }
