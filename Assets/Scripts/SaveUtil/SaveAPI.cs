@@ -69,6 +69,7 @@ public static class SaveAPI
     // 设置并保存玩家到达的最高关卡索引（0-5），仅在 index 大于已有值时更新
     public static void SetReachedLevel(int index)
     {
+        Debug.Log($"SaveAPI: SetReachedLevel({index}) called");
         index = Mathf.Clamp(index, 0, 5);
         var data = LoadDataInternal();
         if (index > data.highestReached)
@@ -82,6 +83,7 @@ public static class SaveAPI
     public static int GetReachedLevel()
     {
         var data = LoadDataInternal();
+        Debug.Log($"SaveAPI: GetReachedLevel() returned {data.highestReached}");
         return data.highestReached;
     }
 

@@ -6,7 +6,7 @@ public class ResetDataButton : InteractiveUI
 {
     protected override void HandleClick()
     {
-        SaveAPI.SetReachedLevel(0);
+        SaveAPI.ClearAll();
         Debug.Log("level0");
     }
 }
