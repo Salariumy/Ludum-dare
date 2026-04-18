@@ -12,7 +12,7 @@ public class attackWave : MonoBehaviour
     void Update()
     {
         spriteRenderer.color = new Color(spriteRenderer.color.r, spriteRenderer.color.g, spriteRenderer.color.b, spriteRenderer.color.a - Time.deltaTime * disappearSpeed);
-        transform.position = new Vector2(transform.position.x + Time.deltaTime * moveSpeed, transform.position.y);
+        transform.position = new Vector3(transform.position.x + Time.deltaTime * (moveSpeed+PlayerData.playerMoveSpeed), transform.position.y, transform.position.z);
         if (spriteRenderer.color.a <= 0) Destroy(gameObject);
 
         Collider2D[] hits = new Collider2D[8];
