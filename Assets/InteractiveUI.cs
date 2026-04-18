@@ -33,6 +33,7 @@ public class InteractiveUI : MonoBehaviour, IPointerEnterHandler, IPointerExitHa
             baseColor = image.color;
         }
 
+
         grayScale = 1f;
         targetGrayScale = 1f;
     }
