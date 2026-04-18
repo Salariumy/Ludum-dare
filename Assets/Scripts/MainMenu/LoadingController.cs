@@ -46,10 +46,11 @@ public class LoadingController : MonoBehaviour
     }
     IEnumerator LoadLevelAsync(int sceneIndex)
     {
-        yield return new WaitForSeconds(0.5f);
-        AsyncOperation operation = SceneManager.LoadSceneAsync(SaveAPI.GetReachedLevel()+1);
         LoadingPage.SetActive(true);
         LoadingPage.GetComponent<LoadingPageController>().applyImage(pictureAndTexts.ElementAt(sceneIndex).picture);
+        LoadingPage.GetComponent<LoadingPageController>().applyText(pictureAndTexts.ElementAt(sceneIndex).text);
+        yield return new WaitForSeconds(0.5f);
+        AsyncOperation operation = SceneManager.LoadSceneAsync(SaveAPI.GetReachedLevel()+1);
         operation.allowSceneActivation = false;
 
         while (!operation.isDone)

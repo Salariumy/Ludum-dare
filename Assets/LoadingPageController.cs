@@ -13,7 +13,7 @@ public class LoadingPageController : MonoBehaviour
     [SerializeField] Image showImage;
     public void applyPercent(float percent)
     {
-        progressBar.rectTransform.position = new Vector2(percent*500, progressBar.rectTransform.position.y);
+        progressBar.rectTransform.position = new Vector2(percent*1980/2, progressBar.rectTransform.position.y);
         float progress = Mathf.Clamp01(percent / 0.9f);
         if(progress>=0.9999f) progressText.text = "Press any key to continue";
         else progressText.text = "Loading... " + (progress * 100).ToString("F2") + "%";
