@@ -38,4 +38,9 @@ public static class GameEvents
     public const string ChestOpened       = "ChestOpened";
     public const string ShieldActivated   = "ShieldActivated";
     public const string ShieldBroken      = "ShieldBroken";
+
+    // 关卡系统
+    public const string SceneSegmentChanged = "SceneSegmentChanged";
+    public const string TransitionStart     = "TransitionStart";
+    public const string GameCompleted       = "GameCompleted";
 }

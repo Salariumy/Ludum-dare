@@ -174,7 +174,8 @@ MonoBehaviour:
   - {fileID: 2129993854}
   - {fileID: 556054684}
   panelWidth: 44.36
-  parallaxFactor: 0.5
+  parallaxFactor: 0.7
+  transitionPanel: {fileID: 0}
 --- !u!1 &15696992
 GameObject:
   m_ObjectHideFlags: 0
@@ -1687,7 +1688,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7eafa7b638dab5340a19becc945a9cb5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  scrollSpeed: 5
+  scrollSpeed: 3.5
   player: {fileID: 3903129665856449504}
   fixedY: 0
 --- !u!1 &556054683
@@ -1716,7 +1717,7 @@ Transform:
   m_GameObject: {fileID: 556054683}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 98.72, y: 1.26, z: -0.028717924}
+  m_LocalPosition: {x: 115.18, y: 1.26, z: -0.028717924}
   m_LocalScale: {x: 0.45723355, y: 0.45723355, z: 0.45723355}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -1763,7 +1764,7 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
-  m_Sprite: {fileID: 21300000, guid: c705b2cdfcd863745a4a9ed3713470ad, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 48a0e551b36ca4e4ab5ba4355beb53c7, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
@@ -2083,12 +2084,12 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
-  m_Sprite: {fileID: 21300000, guid: 3783cf1a592cab54397bf5e31397c537, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 48a0e551b36ca4e4ab5ba4355beb53c7, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
-  m_Size: {x: 1, y: 1}
+  m_Size: {x: 3.38, y: 4.74}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
   m_WasSpriteAssigned: 1
@@ -3201,12 +3202,8 @@ MonoBehaviour:
   maxObstacles: 5
   minCoins: 3
   maxCoins: 8
-  groundY: -2
-  coinHeightMin: 1
-  coinHeightMax: 3
   chestChance: 0.2
   crownChance: 0.15
-  crownHeight: 3.5
   fogSprite: {fileID: 21300000, guid: f90cbfce5a3679e4eb1ed77353662307, type: 3}
   fogChance: 0.4
 --- !u!4 &1768085555
@@ -3265,15 +3262,13 @@ MonoBehaviour:
   m_GameObject: {fileID: 1947092422}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 792b02faea01cae498b5a2f6c509b836, type: 3}
+  m_Script: {fileID: 11500000, guid: 437405d906d3d774384b00f4ca3ff8fc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  levelSceneNames:
-  - Level_01
-  - Level_02
-  - Level_03
-  - Level_04
-  - Level_05
+  levels:
+  - {fileID: 11400000, guid: 835c13a43df86bb449944c26e66e07ec, type: 2}
+  transitionRenderer: {fileID: 0}
+  indestructibleChance: 0.129
 --- !u!1 &1986841518
 GameObject:
   m_ObjectHideFlags: 0
@@ -3513,12 +3508,12 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
-  m_Sprite: {fileID: 21300000, guid: 3783cf1a592cab54397bf5e31397c537, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 48a0e551b36ca4e4ab5ba4355beb53c7, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
-  m_Size: {x: 1, y: 1}
+  m_Size: {x: 115.2, y: 21.599998}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
   m_WasSpriteAssigned: 1
@@ -3536,13 +3531,29 @@ PrefabInstance:
       propertyPath: m_Name
       value: Obstacle
       objectReference: {fileID: 0}
+    - target: {fileID: 7040589249680377474, guid: c4a27e0eb77a8e24d984923b09ed57ee, type: 3}
+      propertyPath: m_Sprite
+      value: 
+      objectReference: {fileID: 21300000, guid: 17b2e17826a67fa49b23af47e0172e68, type: 3}
+    - target: {fileID: 8139742515890775368, guid: c4a27e0eb77a8e24d984923b09ed57ee, type: 3}
+      propertyPath: m_LocalScale.x
+      value: 0.5128231
+      objectReference: {fileID: 0}
+    - target: {fileID: 8139742515890775368, guid: c4a27e0eb77a8e24d984923b09ed57ee, type: 3}
+      propertyPath: m_LocalScale.y
+      value: 0.4743614
+      objectReference: {fileID: 0}
+    - target: {fileID: 8139742515890775368, guid: c4a27e0eb77a8e24d984923b09ed57ee, type: 3}
+      propertyPath: m_LocalScale.z
+      value: 0.5128231
+      objectReference: {fileID: 0}
     - target: {fileID: 8139742515890775368, guid: c4a27e0eb77a8e24d984923b09ed57ee, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 17.48
+      value: 14.15
       objectReference: {fileID: 0}
     - target: {fileID: 8139742515890775368, guid: c4a27e0eb77a8e24d984923b09ed57ee, type: 3}
       propertyPath: m_LocalPosition.y
-      value: -1.95
+      value: -1.75
       objectReference: {fileID: 0}
     - target: {fileID: 8139742515890775368, guid: c4a27e0eb77a8e24d984923b09ed57ee, type: 3}
       propertyPath: m_LocalPosition.z
@@ -3575,6 +3586,18 @@ PrefabInstance:
     - target: {fileID: 8139742515890775368, guid: c4a27e0eb77a8e24d984923b09ed57ee, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8498335394187704016, guid: c4a27e0eb77a8e24d984923b09ed57ee, type: 3}
+      propertyPath: m_Radius
+      value: 1.5617632
+      objectReference: {fileID: 0}
+    - target: {fileID: 8498335394187704016, guid: c4a27e0eb77a8e24d984923b09ed57ee, type: 3}
+      propertyPath: m_Offset.x
+      value: -0.15311265
+      objectReference: {fileID: 0}
+    - target: {fileID: 8498335394187704016, guid: c4a27e0eb77a8e24d984923b09ed57ee, type: 3}
+      propertyPath: m_Offset.y
+      value: -1.1759464
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -3651,6 +3674,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 2489211936915672482, guid: 1e846eb21591f7447afcf25668f8cf30, type: 3}
+      propertyPath: moveSpeed
+      value: 3.5
+      objectReference: {fileID: 0}
     - target: {fileID: 4620464107997330082, guid: 1e846eb21591f7447afcf25668f8cf30, type: 3}
       propertyPath: m_LocalPosition.x
       value: -5.3
@@ -3694,6 +3721,10 @@ PrefabInstance:
     - target: {fileID: 5437162627087825549, guid: 1e846eb21591f7447afcf25668f8cf30, type: 3}
       propertyPath: m_Name
       value: Player
+      objectReference: {fileID: 0}
+    - target: {fileID: 8578734525618272647, guid: 1e846eb21591f7447afcf25668f8cf30, type: 3}
+      propertyPath: signalRadius
+      value: 10
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []

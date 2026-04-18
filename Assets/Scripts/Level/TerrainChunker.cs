@@ -28,12 +28,8 @@ public class TerrainChunker : MonoBehaviour
     [SerializeField] private int   maxObstacles  = 5;
     [SerializeField] private int   minCoins      = 3;
     [SerializeField] private int   maxCoins      = 8;
-    [SerializeField] private float groundY       = 0.5f;
-    [SerializeField] private float coinHeightMin = 1f;
-    [SerializeField] private float coinHeightMax = 3f;
     [SerializeField, Range(0f, 1f)] private float chestChance = 0.2f;
     [SerializeField, Range(0f, 1f)] private float crownChance = 0.15f;  // 15% per chunk
-    [SerializeField] private float crownHeight = 3.5f;
 
     private int totalCrownsSpawned = 0;
     private const int MAX_CROWNS = 3;
@@ -83,6 +79,10 @@ public class TerrainChunker : MonoBehaviour
             leftmost.position = new Vector3(newX, leftmost.position.y, leftmost.position.z);
             Physics2D.SyncTransforms();   // 强制同步碰撞体位置
             RespawnContent(leftmost, newX);
+
+            // 通知 LevelManager 完成一次循环
+            if (LevelManager.Instance)
+                LevelManager.Instance.OnChunkRecycled();
         }
     }
 
@@ -132,6 +132,17 @@ public class TerrainChunker : MonoBehaviour
                     ? ObjectPool.Instance.Get(obstaclePrefab, Vector3.zero, Quaternion.identity, chunk)
                     : Instantiate(obstaclePrefab, Vector3.zero, Quaternion.identity, chunk);
                 obj.transform.position = new Vector3(x, -2f, 0f);
+
+                // 由 LevelManager 决定 Sprite 和是否可摧毁
+                var obs = obj.GetComponent<Obstacle>();
+                if (obs != null && LevelManager.Instance)
+                {
+                    LevelManager.Instance.GetObstacleConfig(out Sprite sp, out bool indestructible);
+                    if (sp != null)
+                        obs.SetVariants(new Sprite[] { sp });
+                    obs.SetIndestructible(indestructible);
+                }
+
                 TryAddFog(obj);
                 spawnedObjects[chunk].Add(obj);
                 occupiedX.Add(x);

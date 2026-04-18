@@ -6,6 +6,9 @@ public class Obstacle : MonoBehaviour
     [Header("Random Appearance")]
     [SerializeField] private Sprite[] variants;
 
+    [Header("Indestructible")]
+    [SerializeField] private bool isIndestructible;
+
     [Header("Shatter Settings")]
     [SerializeField] private int   fragmentsPerAxis = 3;   // 3x3 = 9 fragments
     [SerializeField] private float shatterForce     = 5f;
@@ -15,6 +18,24 @@ public class Obstacle : MonoBehaviour
     private SpriteRenderer sr;
     private Collider2D col;
     private bool isShattered;
+
+    /// <summary>是否为不可摧毁障碍物</summary>
+    public bool IsIndestructible => isIndestructible;
+
+    /// <summary>运行时设置外观 Sprite 列表（由 LevelManager/TerrainChunker 调用）</summary>
+    public void SetVariants(Sprite[] sprites)
+    {
+        variants = sprites;
+        // 立即刷新显示，因为 OnEnable 可能已经用旧 variants 设过 sprite
+        if (sr != null && variants != null && variants.Length > 0)
+            sr.sprite = variants[Random.Range(0, variants.Length)];
+    }
+
+    /// <summary>运行时设置是否可摧毁</summary>
+    public void SetIndestructible(bool value)
+    {
+        isIndestructible = value;
+    }
 
     void Awake()
     {
@@ -37,6 +58,7 @@ public class Obstacle : MonoBehaviour
     public void Shatter()
     {
         if (isShattered) return;
+        if (isIndestructible) return;  // 不可摧毁障碍物无法被击碎
         isShattered = true;
 
         // Hide the original
