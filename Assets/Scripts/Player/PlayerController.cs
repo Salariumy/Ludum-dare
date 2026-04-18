@@ -20,13 +20,12 @@ public class PlayerController : MonoBehaviour
 
     [Header("信号")]
     [SerializeField] private float signalRadius   = 8f;
-    [SerializeField] private GameObject signalWavePrefab;
 
-    [Header("射击（激光）")]
+    [Header("射击")]
     [SerializeField] private Transform  firePoint;
     [SerializeField] private float      fireRate = 0.3f;
 
-    private LaserBeam laserBeam;
+    private WaveAnimator waveAnimator;
 
     [Header("血量")]
     [SerializeField] private int   maxHealth       = 3;
@@ -55,14 +54,7 @@ public class PlayerController : MonoBehaviour
         rb            = GetComponent<Rigidbody2D>();
         sr            = GetComponentInChildren<SpriteRenderer>();
         fogManager    = FindObjectOfType<FogManager>();
-        laserBeam     = GetComponentInChildren<LaserBeam>();
-        if (laserBeam == null)
-        {
-            var lbObj = new GameObject("LaserBeam");
-            lbObj.transform.SetParent(transform);
-            lbObj.transform.localPosition = Vector3.zero;
-            laserBeam = lbObj.AddComponent<LaserBeam>();
-        }
+        waveAnimator  = FindObjectOfType<WaveAnimator>();
         CurrentHealth = maxHealth;
         startX        = transform.position.x;
 
@@ -149,31 +141,26 @@ public class PlayerController : MonoBehaviour
         EventBus.Publish(GameEvents.FrequencyChanged, CurrentFrequency);
     }
 
-    // ───── 高频：Q 发脉冲清除白雾 + 生成信号波动画 ─────
+    // ───── 高频：Q 发脉冲清除白雾 ─────
     void HandleHighFrequency()
     {
         if (Input.GetKeyDown(KeyCode.Q) && fireTimer <= 0f)
         {
             fireTimer = fireRate;
-            if (fogManager) fogManager.EmitPulse(transform.position, signalRadius);
-            if (signalWavePrefab)
-            {
-                var wave = ObjectPool.Instance
-                    ? ObjectPool.Instance.Get(signalWavePrefab, transform.position, Quaternion.identity)
-                    : Instantiate(signalWavePrefab, transform.position, Quaternion.identity);
-                var sw = wave.GetComponent<SignalWave>();
-                if (sw) sw.Init(signalRadius);
-            }
+            if (waveAnimator)
+                waveAnimator.Pulse(transform.position);
+            else if (fogManager)
+                fogManager.EmitPulse(transform.position, signalRadius);
         }
     }
 
-    // ───── 低频：Q 发射激光 ─────
+    // ───── 低频：Q 攻击波 ─────
     void HandleLowFrequency()
     {
         if (Input.GetKeyDown(KeyCode.Q) && fireTimer <= 0f)
         {
             Vector3 origin = firePoint ? firePoint.position : transform.position;
-            if (laserBeam && laserBeam.Fire(origin))
+            if (waveAnimator && waveAnimator.Shoot(origin))
             {
                 fireTimer = fireRate;
             }
