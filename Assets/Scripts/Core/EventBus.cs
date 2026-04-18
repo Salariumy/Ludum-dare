@@ -1,0 +1,36 @@
+using System;
+using System.Collections.Generic;
+
+public static class EventBus
+{
+    private static readonly Dictionary<string, Action<object>> events = new();
+
+    public static void Subscribe(string eventName, Action<object> callback)
+    {
+        if (!events.ContainsKey(eventName))
+            events[eventName] = null;
+        events[eventName] += callback;
+    }
+
+    public static void Unsubscribe(string eventName, Action<object> callback)
+    {
+        if (events.ContainsKey(eventName))
+            events[eventName] -= callback;
+    }
+
+    public static void Publish(string eventName, object data = null)
+    {
+        if (events.ContainsKey(eventName))
+            events[eventName]?.Invoke(data);
+    }
+}
+
+public static class GameEvents
+{
+    public const string PlayerHit         = "PlayerHit";
+    public const string PlayerDied        = "PlayerDied";
+    public const string CoinCollected     = "CoinCollected";
+    public const string FrequencyChanged  = "FrequencyChanged";
+    public const string LevelCompleted    = "LevelCompleted";
+    public const string DistanceUpdated   = "DistanceUpdated";
+}
