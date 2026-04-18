@@ -9,7 +9,7 @@ using UnityEngine;
 public class Chest : MonoBehaviour
 {
     [Header("奖励")]
-    [SerializeField] private int   coinReward    = 5;
+    [SerializeField] private int   coinReward    = 8;
     [SerializeField] private float shieldTime    = 3f;
 
     [Header("视觉")]
@@ -24,10 +24,21 @@ public class Chest : MonoBehaviour
         sr = GetComponent<SpriteRenderer>();
     }
 
+    void OnEnable()
+    {
+        isOpened = false;
+        if (sr && closedSprite)
+            sr.sprite = closedSprite;
+    }
+
     void OnTriggerEnter2D(Collider2D other)
     {
         if (isOpened) return;
         if (!other.CompareTag("Player")) return;
+
+        // 被雾覆盖时由 PlayerController 统一处理伤害，不触发宝箱逻辑
+        var fog = GetComponent<FogCover>();
+        if (fog != null && !fog.IsRevealed) return;
 
         isOpened = true;
 
@@ -46,7 +57,10 @@ public class Chest : MonoBehaviour
     IEnumerator DestroyAfterDelay(float delay)
     {
         yield return new WaitForSeconds(delay);
-        Destroy(gameObject);
+        if (ObjectPool.Instance)
+            ObjectPool.Instance.Return(gameObject);
+        else
+            Destroy(gameObject);
     }
 }
 

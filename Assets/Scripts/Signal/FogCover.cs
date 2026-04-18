@@ -17,6 +17,7 @@ public class FogCover : MonoBehaviour
     [SerializeField] private float revealDuration = 0.4f;
 
     private SpriteRenderer fogRenderer;
+    private GameObject fogChild;
     private bool isRevealed;
 
     /// <summary>雾是否已被脉冲清除</summary>
@@ -39,6 +40,22 @@ public class FogCover : MonoBehaviour
     {
         if (FogManager.Instance)
             FogManager.Instance.Unregister(this);
+
+        // 清理雾子物体（可能已被 RevealRoutine 销毁）
+        if (fogChild != null)
+            DestroyImmediate(fogChild);
+
+        // 未被脉冲揭示时恢复父物体透明度，确保池复用正常
+        if (!isRevealed)
+        {
+            SpriteRenderer parentSR = GetComponent<SpriteRenderer>();
+            if (parentSR != null)
+            {
+                Color c = parentSR.color;
+                c.a = 1f;
+                parentSR.color = c;
+            }
+        }
     }
 
     void CreateFogVisual()
@@ -53,12 +70,12 @@ public class FogCover : MonoBehaviour
         }
 
         // 如果有 fogSprite，仍然显示雾的视觉效果
-        var fogObj = new GameObject("Fog");
-        fogObj.transform.SetParent(transform);
-        fogObj.transform.localPosition = Vector3.zero;
-        fogObj.transform.localScale    = Vector3.one * fogScale;
+        fogChild = new GameObject("Fog");
+        fogChild.transform.SetParent(transform);
+        fogChild.transform.localPosition = Vector3.zero;
+        fogChild.transform.localScale    = Vector3.one * fogScale;
 
-        fogRenderer = fogObj.AddComponent<SpriteRenderer>();
+        fogRenderer = fogChild.AddComponent<SpriteRenderer>();
         fogRenderer.sprite       = fogSprite;
         fogRenderer.color        = fogColor;
         fogRenderer.sortingOrder = fogSortingOrder;
@@ -113,7 +130,10 @@ public class FogCover : MonoBehaviour
 
         // 销毁雾的视觉，物体本身保留
         if (fogRenderer != null)
+        {
             Destroy(fogRenderer.gameObject);
+            fogChild = null;
+        }
 
         if (FogManager.Instance)
             FogManager.Instance.Unregister(this);

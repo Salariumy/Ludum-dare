@@ -55,4 +55,7 @@ public class LevelData : ScriptableObject
 
     [Tooltip("场景段 B（衔接后播放）")]
     public SceneSegment segmentB;
+
+    [Tooltip("该关卡的生成序列（控制障碍物/金币/宝箱/皇冠出现顺序）")]
+    public SpawnPattern spawnPattern;
 }

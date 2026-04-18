@@ -23,20 +23,13 @@ public class TerrainChunker : MonoBehaviour
     [SerializeField] private GameObject chestPrefab;
     [SerializeField] private GameObject crownPrefab;
 
-    [Header("生成参数")]
-    [SerializeField] private int   minObstacles  = 2;
-    [SerializeField] private int   maxObstacles  = 5;
-    [SerializeField] private int   minCoins      = 3;
-    [SerializeField] private int   maxCoins      = 8;
-    [SerializeField, Range(0f, 1f)] private float chestChance = 0.2f;
-    [SerializeField, Range(0f, 1f)] private float crownChance = 0.15f;  // 15% per chunk
+    [Header("白雾 Sprite")]
+    [SerializeField] private Sprite fogSprite;
 
-    private int totalCrownsSpawned = 0;
+    private int totalCrownsSpawned;
     private const int MAX_CROWNS = 3;
-
-    [Header("白雾参数")]
-    [SerializeField] private Sprite fogSprite;             // 白色圆形 Sprite
-    [SerializeField, Range(0f, 1f)] private float fogChance = 0.4f;  // 40% 的物体被雾覆盖
+    private SpawnPattern currentPattern;
+    private int spawnCursor;
 
     private Camera cam;
 
@@ -86,7 +79,7 @@ public class TerrainChunker : MonoBehaviour
         }
     }
 
-    /// <summary>清除旧物体，随机生成新障碍物和金币</summary>
+    /// <summary>清除旧物体，按 SpawnPattern 生成新内容</summary>
     void RespawnContent(Transform chunk, float chunkStartX)
     {
         // 回收上一轮物体到对象池
@@ -96,7 +89,6 @@ public class TerrainChunker : MonoBehaviour
             {
                 if (obj != null)
                 {
-                    // DestroyImmediate 确保 FogCover 立刻移除，避免池复用时残留
                     var fogs = obj.GetComponents<FogCover>();
                     foreach (var fog in fogs)
                         DestroyImmediate(fog);
@@ -109,128 +101,136 @@ public class TerrainChunker : MonoBehaviour
             spawnedObjects[chunk].Clear();
         }
 
-        // 记录已生成的"非金币"物体 X 坐标，用于距离检查
-        List<float> occupiedX = new List<float>();
-        float minDistance = 10f;  // X 间隔最小 10m
+        // 获取当前关卡的 SpawnPattern
+        SpawnPattern pattern = null;
+        if (LevelManager.Instance != null && LevelManager.Instance.CurrentLevel != null)
+            pattern = LevelManager.Instance.CurrentLevel.spawnPattern;
 
-        // 在 chunk 范围内随机放障碍物
-        int obstacleCount = Random.Range(minObstacles, maxObstacles + 1);
-        float margin = 3f;
-        for (int i = 0; i < obstacleCount; i++)
+        if (pattern == null || pattern.entries == null || pattern.entries.Length == 0)
+            return;
+
+        // 切换关卡/Pattern 时重置游标
+        if (pattern != currentPattern)
         {
-            float x;
-            int attempts = 0;
-            do
+            currentPattern = pattern;
+            spawnCursor = 0;
+        }
+
+        float margin = 3f;
+        float cursor = chunkStartX + margin;
+        float chunkEnd = chunkStartX + chunkWidth - margin;
+
+        while (cursor < chunkEnd && HasMoreEntries(pattern))
+        {
+            SpawnEntry entry = pattern.entries[spawnCursor];
+
+            // 皇冠已达上限时跳过
+            if (entry.type == SpawnType.Crown && totalCrownsSpawned >= MAX_CROWNS)
             {
-                x = Random.Range(chunkStartX + margin, chunkStartX + chunkWidth - margin);
-                attempts++;
-            } while (IsTooCloseToOthers(x, occupiedX, minDistance) && attempts < 10);
+                AdvanceCursor(pattern);
+                continue;
+            }
 
-            if (attempts < 10 && obstaclePrefab)
+            if (entry.type == SpawnType.CoinCluster)
             {
-                var obj = ObjectPool.Instance
-                    ? ObjectPool.Instance.Get(obstaclePrefab, Vector3.zero, Quaternion.identity, chunk)
-                    : Instantiate(obstaclePrefab, Vector3.zero, Quaternion.identity, chunk);
-                obj.transform.position = new Vector3(x, -2f, 0f);
+                float clusterWidth = SpawnCoinCluster(chunk, cursor, entry, pattern.coinSpacing);
+                cursor += clusterWidth + 2f;
+            }
+            else
+            {
+                SpawnSingleObject(chunk, cursor, entry);
+                cursor += Random.Range(pattern.minSpacing, pattern.maxSpacing);
+            }
 
-                // 由 LevelManager 决定 Sprite 和是否可摧毁
-                var obs = obj.GetComponent<Obstacle>();
-                if (obs != null && LevelManager.Instance)
-                {
-                    LevelManager.Instance.GetObstacleConfig(out Sprite sp, out bool indestructible);
-                    if (sp != null)
-                        obs.SetVariants(new Sprite[] { sp });
-                    obs.SetIndestructible(indestructible);
-                }
+            AdvanceCursor(pattern);
+        }
+    }
 
-                TryAddFog(obj);
-                spawnedObjects[chunk].Add(obj);
-                occupiedX.Add(x);
+    bool HasMoreEntries(SpawnPattern pattern)
+    {
+        if (pattern.loop) return true;
+        return spawnCursor < pattern.entries.Length;
+    }
+
+    void AdvanceCursor(SpawnPattern pattern)
+    {
+        spawnCursor++;
+        if (pattern.loop && spawnCursor >= pattern.entries.Length)
+            spawnCursor = 0;
+    }
+
+    void SpawnSingleObject(Transform chunk, float x, SpawnEntry entry)
+    {
+        GameObject prefab = GetPrefab(entry.type);
+        if (prefab == null) return;
+
+        Vector3 pos = new Vector3(x, -2f, 0f);
+        var obj = ObjectPool.Instance
+            ? ObjectPool.Instance.Get(prefab, pos, Quaternion.identity, chunk)
+            : Instantiate(prefab, pos, Quaternion.identity, chunk);
+
+        if (entry.type == SpawnType.Obstacle)
+        {
+            var obs = obj.GetComponent<Obstacle>();
+            if (obs != null && LevelManager.Instance)
+            {
+                LevelManager.Instance.GetObstacleConfig(out Sprite sp, out bool indestructible);
+                if (sp != null)
+                    obs.SetVariants(new Sprite[] { sp });
+                obs.SetIndestructible(indestructible);
             }
         }
 
-        // 在 chunk 范围内随机放金币（金币无距离限制）
-        int coinCount = Random.Range(minCoins, maxCoins + 1);
-        for (int i = 0; i < coinCount; i++)
+        if (entry.type == SpawnType.Crown)
+            totalCrownsSpawned++;
+
+        TryAddFog(obj, entry.fogChance);
+        spawnedObjects[chunk].Add(obj);
+    }
+
+    GameObject GetPrefab(SpawnType type)
+    {
+        switch (type)
         {
-            float x = Random.Range(chunkStartX + margin, chunkStartX + chunkWidth - margin);
+            case SpawnType.Obstacle: return obstaclePrefab;
+            case SpawnType.Chest:    return chestPrefab;
+            case SpawnType.Crown:    return crownPrefab;
+            default:                 return null;
+        }
+    }
+
+    /// <summary>生成一簇弧形排列的金币，返回簇的总宽度</summary>
+    float SpawnCoinCluster(Transform chunk, float startX, SpawnEntry entry, float spacing)
+    {
+        int count = Mathf.Max(1, entry.coinCount);
+        float arcH = entry.arcHeight;
+
+        for (int i = 0; i < count; i++)
+        {
+            float t = count > 1 ? (float)i / (count - 1) : 0.5f;
+            float y = -2f + arcH * Mathf.Sin(t * Mathf.PI);
+            float x = startX + i * spacing;
+
             if (coinPrefab)
             {
+                Vector3 pos = new Vector3(x, y, 0f);
                 var obj = ObjectPool.Instance
-                    ? ObjectPool.Instance.Get(coinPrefab, Vector3.zero, Quaternion.identity, chunk)
-                    : Instantiate(coinPrefab, Vector3.zero, Quaternion.identity, chunk);
-                obj.transform.position = new Vector3(x, -2f, 0f);
-                TryAddFog(obj);
+                    ? ObjectPool.Instance.Get(coinPrefab, pos, Quaternion.identity, chunk)
+                    : Instantiate(coinPrefab, pos, Quaternion.identity, chunk);
+                TryAddFog(obj, entry.fogChance);
                 spawnedObjects[chunk].Add(obj);
             }
         }
-
-        // 随机放宝箱（有距离限制）
-        if (chestPrefab && Random.value <= chestChance)
-        {
-            float x;
-            int attempts = 0;
-            do
-            {
-                x = Random.Range(chunkStartX + margin, chunkStartX + chunkWidth - margin);
-                attempts++;
-            } while (IsTooCloseToOthers(x, occupiedX, minDistance) && attempts < 10);
-
-            if (attempts < 10)
-            {
-                var obj = ObjectPool.Instance
-                    ? ObjectPool.Instance.Get(chestPrefab, Vector3.zero, Quaternion.identity, chunk)
-                    : Instantiate(chestPrefab, Vector3.zero, Quaternion.identity, chunk);
-                obj.transform.position = new Vector3(x, -2f, 0f);
-                TryAddFog(obj);
-                spawnedObjects[chunk].Add(obj);
-                occupiedX.Add(x);
-            }
-        }
-
-        // 随机放皇冠（上限3个，有距离限制）
-        if (crownPrefab && totalCrownsSpawned < MAX_CROWNS && Random.value <= crownChance)
-        {
-            float x;
-            int attempts = 0;
-            do
-            {
-                x = Random.Range(chunkStartX + margin, chunkStartX + chunkWidth - margin);
-                attempts++;
-            } while (IsTooCloseToOthers(x, occupiedX, minDistance) && attempts < 10);
-
-            if (attempts < 10)
-            {
-                var obj = ObjectPool.Instance
-                    ? ObjectPool.Instance.Get(crownPrefab, Vector3.zero, Quaternion.identity, chunk)
-                    : Instantiate(crownPrefab, Vector3.zero, Quaternion.identity, chunk);
-                obj.transform.position = new Vector3(x, -2f, 0f);
-                spawnedObjects[chunk].Add(obj);
-                occupiedX.Add(x);
-                totalCrownsSpawned++;
-            }
-        }
+        return (count - 1) * spacing;
     }
 
-    /// <summary>检查 X 坐标是否过于接近其他物体</summary>
-    bool IsTooCloseToOthers(float x, List<float> occupiedXList, float minDistance)
+    /// <summary>按概率给物体加上白雾</summary>
+    void TryAddFog(GameObject obj, float chance)
     {
-        foreach (float ox in occupiedXList)
-        {
-            if (Mathf.Abs(x - ox) < minDistance)
-                return true;
-        }
-        return false;
-    }
+        if (chance <= 0f || Random.value > chance) return;
 
-    /// <summary>随机给物体加上白雾</summary>
-    void TryAddFog(GameObject obj)
-    {
-        if (Random.value > fogChance) return;
-
-        // 确保没有残留的 FogCover（对象池复用时可能存在）
         var existing = obj.GetComponent<FogCover>();
-        if (existing != null) return;  // 已有则跳过，避免重复
+        if (existing != null) return;
 
         var fog = obj.AddComponent<FogCover>();
         if (fogSprite) fog.SetFogSprite(fogSprite);

@@ -225,6 +225,15 @@ public class PlayerController : MonoBehaviour
 
     void OnTriggerEnter2D(Collider2D other)
     {
+        // 被雾覆盖的物体：触碰即扣血，不触发正常逻辑
+        var fog = other.GetComponent<FogCover>();
+        if (fog != null && !fog.IsRevealed)
+        {
+            TakeDamage();
+            other.gameObject.SetActive(false);
+            return;
+        }
+
         if (other.CompareTag("Coin"))
         {
             CollectCoin();

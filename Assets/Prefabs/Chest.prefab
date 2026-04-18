@@ -15,11 +15,11 @@ GameObject:
   - component: {fileID: 5795768940926625880}
   m_Layer: 0
   m_Name: Chest
-  m_TagString: Obstacle
+  m_TagString: Chest
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &8178654854211443555
 Transform:
   m_ObjectHideFlags: 0

@@ -13,7 +13,7 @@ public class Crown : MonoBehaviour
 
     private Vector3 startPos;
 
-    void Start()
+    void OnEnable()
     {
         startPos = transform.position;
     }
@@ -32,6 +32,10 @@ public class Crown : MonoBehaviour
     void OnTriggerEnter2D(Collider2D other)
     {
         if (!other.CompareTag("Player")) return;
+
+        // 被雾覆盖时由 PlayerController 统一处理伤害，不触发收集逻辑
+        var fog = GetComponent<FogCover>();
+        if (fog != null && !fog.IsRevealed) return;
 
         EventBus.Publish(GameEvents.CrownCollected);
         Destroy(gameObject);

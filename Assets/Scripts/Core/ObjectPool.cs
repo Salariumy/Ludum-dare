@@ -35,7 +35,6 @@ public class ObjectPool : MonoBehaviour
         else
         {
             obj = Instantiate(prefab, position, rotation, parent);
-            // 记录该对象对应的预制体，方便归还
             var tag = obj.AddComponent<PoolTag>();
             tag.Prefab = prefab;
         }
