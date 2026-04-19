@@ -14,8 +14,10 @@ public class Obstacle : MonoBehaviour
 
     private SpriteRenderer sr;
     private Collider2D col;
+    private CapsuleCollider2D capsuleCol;
     private Animator animator;
     private bool isDestroying;
+    private Vector2 originalColliderOffset;
 
     /// <summary>是否为不可摧毁障碍物</summary>
     public bool IsIndestructible => isIndestructible;
@@ -33,13 +35,16 @@ public class Obstacle : MonoBehaviour
     public void SetIndestructible(bool value)
     {
         isIndestructible = value;
+        ApplyColliderOffset();
     }
 
     void Awake()
     {
         sr  = GetComponent<SpriteRenderer>();
         col = GetComponent<Collider2D>();
+        capsuleCol = GetComponent<CapsuleCollider2D>();
         animator = GetComponent<Animator>();
+        if (capsuleCol) originalColliderOffset = capsuleCol.offset;
     }
 
     void OnEnable()
@@ -58,6 +63,8 @@ public class Obstacle : MonoBehaviour
         }
         if (col) col.enabled = true;
 
+        ApplyColliderOffset();
+
         // 清理池复用时可能残留的雾子物体
         for (int i = transform.childCount - 1; i >= 0; i--)
         {
@@ -69,6 +76,16 @@ public class Obstacle : MonoBehaviour
         // Random sprite each time
         if (sr != null && variants != null && variants.Length > 0)
             sr.sprite = variants[Random.Range(0, variants.Length)];
+    }
+
+    /// <summary>根据是否可摧毁调整 CapsuleCollider2D 的 Y 偏移</summary>
+    private void ApplyColliderOffset()
+    {
+        if (!capsuleCol) return;
+        Vector2 offset = originalColliderOffset;
+        if (isIndestructible)
+            offset.y = originalColliderOffset.y - 5f;
+        capsuleCol.offset = offset;
     }
 
     /// <summary>Called by laser — play destruction animation</summary>

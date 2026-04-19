@@ -40,6 +40,8 @@ public class AudioManager : MonoBehaviour
     [Header("SFX — 关卡")]
     [SerializeField] private AudioClip sfxLevelComplete;    // 关卡通关
     [SerializeField] private AudioClip sfxLevelIntroText;   // 关卡开头文字
+    [SerializeField] private AudioClip sfxTyping;           // 打字机逐字音效
+    [SerializeField] private AudioClip sfxBookFlip;         // 翻书音效
 
     [Header("SFX 设置")]
     [SerializeField, Range(0f, 1f)] private float sfxVolume = 0.7f;
@@ -49,6 +51,7 @@ public class AudioManager : MonoBehaviour
     private AudioSource bgmSourceA;
     private AudioSource bgmSourceB;
     private AudioSource activeBgmSource;
+    private AudioSource typingAudioSource;  // 打字音效专用 source
     private List<AudioSource> sfxPool;
 
     // ══════════════════════════════════════════
@@ -65,6 +68,9 @@ public class AudioManager : MonoBehaviour
         bgmSourceA = CreateAudioSource("BGM_A", true);
         bgmSourceB = CreateAudioSource("BGM_B", true);
         activeBgmSource = bgmSourceA;
+
+        // 创建打字音效专用 source（不循环）
+        typingAudioSource = CreateAudioSource("Typing", false);
 
         // 创建 SFX 对象池
         sfxPool = new List<AudioSource>(sfxPoolSize);
@@ -120,6 +126,27 @@ public class AudioManager : MonoBehaviour
 
     /// <summary>播放关卡开头文字音效</summary>
     public void PlayLevelIntroText()   => PlaySFX(sfxLevelIntroText);
+    
+    /// <summary>开始播放打字音效（长音效，持续播放）</summary>
+    public void PlayTypingStart()
+    {
+        if (sfxTyping == null || typingAudioSource == null) return;
+        if (typingAudioSource.isPlaying)
+            typingAudioSource.Stop();
+        typingAudioSource.clip = sfxTyping;
+        typingAudioSource.volume = sfxVolume;
+        typingAudioSource.pitch = 1f;
+        typingAudioSource.Play();
+    }
+    
+    /// <summary>停止打字音效</summary>
+    public void StopTyping()
+    {
+        if (typingAudioSource != null && typingAudioSource.isPlaying)
+            typingAudioSource.Stop();
+    }
+    
+    public void PlayBookFlip()          => PlaySFX(sfxBookFlip);
 
     /// <summary>按关卡索引播放 BGM（带淡入淡出）</summary>
     public void PlayBGM(int levelIndex)

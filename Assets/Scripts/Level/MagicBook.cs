@@ -33,11 +33,10 @@ public class MagicBook : MonoBehaviour
             // 触碰时才启用 Animator 并播放开书动画
             animator.enabled = true;
             animator.SetTrigger("Open");
+
+            // 播放翻书音效
             if (AudioManager.Instance)
-            {
-                // 可选：加个翻书的音效，如果你有的话
-                // AudioManager.Instance.PlayBookOpen(); 
-            }
+                AudioManager.Instance.PlayBookFlip();
 
             // 广播关卡完成事件
             EventBus.Publish(GameEvents.LevelCompleted);
