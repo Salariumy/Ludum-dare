@@ -126,6 +126,7 @@ public class PlayerController : MonoBehaviour
             rb.velocity = new Vector2(rb.velocity.x, 0f);
             rb.AddForce(Vector2.up * jumpForce, ForceMode2D.Impulse);
             jumpCount++;
+            if (AudioManager.Instance) AudioManager.Instance.PlayJump();
         }
     }
 

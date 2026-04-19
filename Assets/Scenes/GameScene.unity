@@ -280,8 +280,8 @@ MonoBehaviour:
       m_Calls: []
   m_text: coin
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
-  m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: 162694f5492db934c8c9afd5881e11d5, type: 2}
+  m_sharedMaterial: {fileID: -4777737299086380786, guid: 162694f5492db934c8c9afd5881e11d5, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -414,8 +414,8 @@ MonoBehaviour:
       m_Calls: []
   m_text: distance
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
-  m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: 162694f5492db934c8c9afd5881e11d5, type: 2}
+  m_sharedMaterial: {fileID: -4777737299086380786, guid: 162694f5492db934c8c9afd5881e11d5, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -523,7 +523,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 337, y: 169}
+  m_AnchoredPosition: {x: 364, y: 169}
   m_SizeDelta: {x: 200, y: 50}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &282685824
@@ -548,8 +548,8 @@ MonoBehaviour:
       m_Calls: []
   m_text: Frequency
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
-  m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: 162694f5492db934c8c9afd5881e11d5, type: 2}
+  m_sharedMaterial: {fileID: -4777737299086380786, guid: 162694f5492db934c8c9afd5881e11d5, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -4398,6 +4398,75 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2096350940}
   m_CullTransparentMesh: 1
+--- !u!1 &2097337152
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 2097337154}
+  - component: {fileID: 2097337153}
+  m_Layer: 0
+  m_Name: AudioManager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &2097337153
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2097337152}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 393c04eaf5eb28b448592b352af2a143, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  levelBGMs:
+  - {fileID: 8300000, guid: f977ea24ce36f1141b8cc57de64c54c2, type: 3}
+  - {fileID: 8300000, guid: a183b7fdb0fb75942981ee5da46ce272, type: 3}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  bgmVolume: 0.4
+  bgmFadeDuration: 1
+  sfxBirth: {fileID: 8300000, guid: 1fa8e2bc9b98aab41acab85f6e5d8dd1, type: 3}
+  sfxDeath: {fileID: 0}
+  sfxHit: {fileID: 8300000, guid: 893dea3cd87e2e64c82bfc5ec82b35fb, type: 3}
+  sfxJump: {fileID: 8300000, guid: 0b90b7c30cb062840bc314abcea4404f, type: 3}
+  sfxScanWave: {fileID: 8300000, guid: 1f86134b95a3e924c93e6c201279310d, type: 3}
+  sfxClearWave: {fileID: 8300000, guid: 368f1c3df1b091542b747fad92698112, type: 3}
+  sfxFrequencyShift: {fileID: 0}
+  sfxBubblePop: {fileID: 8300000, guid: 7d9e8f9f1c9a49446b8f78fc6dc660d6, type: 3}
+  sfxObstacleShatter: {fileID: 8300000, guid: 6f0c9ea9df19e3c44a9e233e69db06ef, type: 3}
+  sfxCoinCollect: {fileID: 8300000, guid: 3c8c48062f4e4364385e42cd0c67de13, type: 3}
+  sfxCrownCollect: {fileID: 0}
+  sfxChestOpen: {fileID: 0}
+  sfxShieldActivate: {fileID: 0}
+  sfxLevelComplete: {fileID: 0}
+  sfxLevelIntroText: {fileID: 0}
+  sfxVolume: 0.612
+  sfxPoolSize: 8
+--- !u!4 &2097337154
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2097337152}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: -1.5519457, y: -1.2211251, z: 0.028717924}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &2129993853
 GameObject:
   m_ObjectHideFlags: 0
@@ -4500,7 +4569,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8139742515890775368, guid: c4a27e0eb77a8e24d984923b09ed57ee, type: 3}
       propertyPath: m_LocalPosition.y
-      value: -2.09
+      value: -1.73
       objectReference: {fileID: 0}
     - target: {fileID: 8139742515890775368, guid: c4a27e0eb77a8e24d984923b09ed57ee, type: 3}
       propertyPath: m_LocalPosition.z
@@ -4612,6 +4681,22 @@ PrefabInstance:
     - target: {fileID: 74972783085803474, guid: dc3653414a820a844889f023af9ecb2e, type: 3}
       propertyPath: m_Name
       value: Player
+      objectReference: {fileID: 0}
+    - target: {fileID: 2097999325752398118, guid: dc3653414a820a844889f023af9ecb2e, type: 3}
+      propertyPath: m_Sprite
+      value: 
+      objectReference: {fileID: 21300000, guid: 4fae6147c68136941991b63f53864b8a, type: 3}
+    - target: {fileID: 2272824963768295030, guid: dc3653414a820a844889f023af9ecb2e, type: 3}
+      propertyPath: m_Sprite
+      value: 
+      objectReference: {fileID: 0}
+    - target: {fileID: 2272824963768295030, guid: dc3653414a820a844889f023af9ecb2e, type: 3}
+      propertyPath: m_WasSpriteAssigned
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3108942919754509804, guid: dc3653414a820a844889f023af9ecb2e, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 1.84
       objectReference: {fileID: 0}
     - target: {fileID: 7611961719137119689, guid: dc3653414a820a844889f023af9ecb2e, type: 3}
       propertyPath: m_LocalPosition.x
@@ -4792,4 +4877,5 @@ SceneRoots:
   - {fileID: 1768085555}
   - {fileID: 947451640}
   - {fileID: 1947092423}
+  - {fileID: 2097337154}
   - {fileID: 1183543283}

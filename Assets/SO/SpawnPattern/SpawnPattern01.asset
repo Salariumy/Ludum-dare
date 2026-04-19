@@ -28,7 +28,7 @@ MonoBehaviour:
   - type: 0
     hasFog: 0
     coinCount: 0
-    arcHeight: 0
+    arcHeight: -0.11
   - type: 2
     hasFog: 0
     coinCount: 8

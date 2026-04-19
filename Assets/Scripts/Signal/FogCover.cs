@@ -10,7 +10,7 @@ public class FogCover : MonoBehaviour
     [Header("雾的外观")]
     [SerializeField] private Sprite fogSprite;           // 白色圆形/云形 Sprite（留空则用内置）
     [SerializeField] private Color  fogColor = new Color(1f, 1f, 1f, 0.85f);
-    [SerializeField] private float  fogScale = 2f;       // 雾 Sprite 缩放（相对被覆盖物体）
+    [SerializeField] private float  fogScale = 1f;       // 雾 Sprite 缩放（相对被覆盖物体）
     [SerializeField] private int    fogSortingOrder = 50; // 确保雾渲染在物体前面
 
     [Header("消散动画")]
@@ -91,6 +91,7 @@ public class FogCover : MonoBehaviour
         fogRenderer.sprite       = fogSprite;
         fogRenderer.color        = fogColor;
         fogRenderer.sortingOrder = fogSortingOrder;
+        fogRenderer.sortingLayerName = "Ground";
     }
 
     /// <summary>被高频脉冲清除时调用</summary>
@@ -98,6 +99,7 @@ public class FogCover : MonoBehaviour
     {
         if (isRevealed || !gameObject.activeInHierarchy) return;
         isRevealed = true;
+        if (AudioManager.Instance) AudioManager.Instance.PlayBubblePop();
         StartCoroutine(RevealRoutine());
     }
 

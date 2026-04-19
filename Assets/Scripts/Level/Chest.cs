@@ -17,16 +17,25 @@ public class Chest : MonoBehaviour
     [SerializeField] private Sprite openedSprite;
 
     private SpriteRenderer sr;
+    private Animator animator;
     private bool isOpened;
 
     void Awake()
     {
         sr = GetComponent<SpriteRenderer>();
+        animator = GetComponent<Animator>();
     }
 
     void OnEnable()
     {
         isOpened = false;
+        
+        // 如果有Animator，重置为关闭状态
+        if (animator)
+        {
+            animator.SetBool("IsOpen", false);
+        }
+
         if (sr)
         {
             sr.enabled = true;
@@ -57,25 +66,22 @@ public class Chest : MonoBehaviour
 
         isOpened = true;
 
-        // 切换为打开的 Sprite
-        if (sr && openedSprite)
+        // 播放打开动画
+        if (animator)
+        {
+            animator.SetBool("IsOpen", true);
+        }
+        else if (sr && openedSprite)
+        {
+            // 如果没有Animator的降级处理：直接换图
             sr.sprite = openedSprite;
+        }
 
         // 广播宝箱事件，传递奖励数据
         var reward = new ChestReward { coins = coinReward, shieldDuration = shieldTime };
         EventBus.Publish(GameEvents.ChestOpened, reward);
 
-        // 延迟销毁，让玩家看到打开效果
-        StartCoroutine(DestroyAfterDelay(0.5f));
-    }
-
-    IEnumerator DestroyAfterDelay(float delay)
-    {
-        yield return new WaitForSeconds(delay);
-        if (ObjectPool.Instance)
-            ObjectPool.Instance.Return(gameObject);
-        else
-            Destroy(gameObject);
+        // ※ 移除了原本的摧毁逻辑，宝箱现在只会打开并留在原地 ※
     }
 }
 

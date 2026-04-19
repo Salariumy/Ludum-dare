@@ -81,6 +81,8 @@ public class Obstacle : MonoBehaviour
         
         // Disable collider so obstacle won't hurt the player during destruction
         if (col) col.enabled = false;
+
+        if (AudioManager.Instance) AudioManager.Instance.PlayObstacleShatter();
         
         // Play destruction animation
         if (animator)

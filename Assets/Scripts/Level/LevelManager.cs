@@ -59,6 +59,9 @@ public class LevelManager : MonoBehaviour
 
         if (transitionRenderer) transitionRenderer.enabled = false;
 
+        // 播放当前关卡 BGM
+        if (AudioManager.Instance) AudioManager.Instance.PlayBGM(CurrentLevelIndex);
+
         EventBus.Publish(GameEvents.SceneSegmentChanged, CurrentSegment);
     }
 

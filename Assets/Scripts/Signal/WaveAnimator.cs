@@ -34,6 +34,7 @@ public class WaveAnimator : MonoBehaviour
     public bool Shoot(Vector3 origin)
     {
         anim.SetTrigger(HashShoot);
+        if (AudioManager.Instance) AudioManager.Instance.PlayClearWave();
         DoAttackRaycast(origin);
         return true;
     }
@@ -42,6 +43,7 @@ public class WaveAnimator : MonoBehaviour
     public void Pulse(Vector3 origin)
     {
         anim.SetTrigger(HashPulse);
+        if (AudioManager.Instance) AudioManager.Instance.PlayScanWave();
         DoFogClear(origin);
     }
 
