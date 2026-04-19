@@ -13,19 +13,170 @@ MonoBehaviour:
   m_Name: SpawnPattern02
   m_EditorClassIdentifier: 
   loop: 1
-  minSpacing: 11
-  maxSpacing: 20
+  minSpacing: 20
+  maxSpacing: 28
   coinSpacing: 1.5
+  minCoinClusterDistance: 3
   entries:
-  - type: 0
-    fogChance: 0
-    coinCount: 0
-    arcHeight: 0
   - type: 1
-    fogChance: 0
+    hasFog: 0
+    isIndestructible: 0
     coinCount: 8
-    arcHeight: 0.38
+    arcHeight: 0
+    hasCoinAround: 0
+    coinAroundCount: 3
+    coinAroundArcHeight: 0
+    coinAroundSpacing: 1.5
+  - type: 0
+    hasFog: 0
+    isIndestructible: 1
+    coinCount: 8
+    arcHeight: 0
+    hasCoinAround: 1
+    coinAroundCount: 2
+    coinAroundArcHeight: 1.8
+    coinAroundSpacing: 1.5
+  - type: 0
+    hasFog: 1
+    isIndestructible: 0
+    coinCount: 0
+    arcHeight: -0.11
+    hasCoinAround: 1
+    coinAroundCount: 3
+    coinAroundArcHeight: 0
+    coinAroundSpacing: 1.5
+  - type: 0
+    hasFog: 1
+    isIndestructible: 0
+    coinCount: 0
+    arcHeight: -0.11
+    hasCoinAround: 1
+    coinAroundCount: 3
+    coinAroundArcHeight: 0
+    coinAroundSpacing: 1.5
+  - type: 3
+    hasFog: 1
+    isIndestructible: 1
+    coinCount: 8
+    arcHeight: 2.1
+    hasCoinAround: 0
+    coinAroundCount: 3
+    coinAroundArcHeight: 0
+    coinAroundSpacing: 1.5
+  - type: 0
+    hasFog: 1
+    isIndestructible: 0
+    coinCount: 8
+    arcHeight: 2.1
+    hasCoinAround: 1
+    coinAroundCount: 3
+    coinAroundArcHeight: 0
+    coinAroundSpacing: 1.5
+  - type: 0
+    hasFog: 0
+    isIndestructible: 1
+    coinCount: 8
+    arcHeight: 2.1
+    hasCoinAround: 0
+    coinAroundCount: 3
+    coinAroundArcHeight: 1.8
+    coinAroundSpacing: 1.5
+  - type: 0
+    hasFog: 0
+    isIndestructible: 1
+    coinCount: 8
+    arcHeight: 0
+    hasCoinAround: 1
+    coinAroundCount: 2
+    coinAroundArcHeight: 1.8
+    coinAroundSpacing: 1.5
+  - type: 3
+    hasFog: 1
+    isIndestructible: 0
+    coinCount: 8
+    arcHeight: 2.1
+    hasCoinAround: 0
+    coinAroundCount: 3
+    coinAroundArcHeight: 0
+    coinAroundSpacing: 1.5
+  - type: 0
+    hasFog: 1
+    isIndestructible: 0
+    coinCount: 8
+    arcHeight: 2.1
+    hasCoinAround: 1
+    coinAroundCount: 3
+    coinAroundArcHeight: 0
+    coinAroundSpacing: 1.5
   - type: 2
-    fogChance: 0
+    hasFog: 1
+    isIndestructible: 0
     coinCount: 8
-    arcHeight: 0.38
+    arcHeight: 2.1
+    hasCoinAround: 1
+    coinAroundCount: 2
+    coinAroundArcHeight: 0
+    coinAroundSpacing: 1.5
+  - type: 0
+    hasFog: 0
+    isIndestructible: 1
+    coinCount: 8
+    arcHeight: 2.1
+    hasCoinAround: 0
+    coinAroundCount: 3
+    coinAroundArcHeight: 0
+    coinAroundSpacing: 1.5
+  - type: 1
+    hasFog: 0
+    isIndestructible: 0
+    coinCount: 8
+    arcHeight: 0
+    hasCoinAround: 0
+    coinAroundCount: 3
+    coinAroundArcHeight: 0
+    coinAroundSpacing: 1.5
+  - type: 0
+    hasFog: 1
+    isIndestructible: 0
+    coinCount: 8
+    arcHeight: 2.1
+    hasCoinAround: 0
+    coinAroundCount: 3
+    coinAroundArcHeight: 0
+    coinAroundSpacing: 1.5
+  - type: 3
+    hasFog: 1
+    isIndestructible: 1
+    coinCount: 8
+    arcHeight: 2.1
+    hasCoinAround: 0
+    coinAroundCount: 3
+    coinAroundArcHeight: 0
+    coinAroundSpacing: 1.5
+  - type: 2
+    hasFog: 1
+    isIndestructible: 0
+    coinCount: 8
+    arcHeight: 2.1
+    hasCoinAround: 0
+    coinAroundCount: 3
+    coinAroundArcHeight: 0
+    coinAroundSpacing: 1.5
+  - type: 0
+    hasFog: 1
+    isIndestructible: 1
+    coinCount: 8
+    arcHeight: 2.1
+    hasCoinAround: 0
+    coinAroundCount: 3
+    coinAroundArcHeight: 0
+    coinAroundSpacing: 1.5
+  - type: 4
+    hasFog: 0
+    isIndestructible: 1
+    coinCount: 8
+    arcHeight: 2.1
+    hasCoinAround: 0
+    coinAroundCount: 3
+    coinAroundArcHeight: 0
+    coinAroundSpacing: 1.5
