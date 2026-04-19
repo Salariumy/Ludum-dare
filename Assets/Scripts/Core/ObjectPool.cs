@@ -44,6 +44,9 @@ public class ObjectPool : MonoBehaviour
     /// <summary>归还对象到池中</summary>
     public void Return(GameObject obj)
     {
+        if (obj == null) return;
+        if (obj.transform.parent == transform) return; // 防止重复归还
+
         var tag = obj.GetComponent<PoolTag>();
         if (tag == null || tag.Prefab == null)
         {

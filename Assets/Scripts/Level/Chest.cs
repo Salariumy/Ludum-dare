@@ -27,8 +27,23 @@ public class Chest : MonoBehaviour
     void OnEnable()
     {
         isOpened = false;
-        if (sr && closedSprite)
-            sr.sprite = closedSprite;
+        if (sr)
+        {
+            sr.enabled = true;
+            Color c = sr.color;
+            c.a = 1f;
+            sr.color = c;
+            if (closedSprite)
+                sr.sprite = closedSprite;
+        }
+
+        // 清理池复用时可能残留的雾子物体
+        for (int i = transform.childCount - 1; i >= 0; i--)
+        {
+            var child = transform.GetChild(i);
+            if (child.name == "Fog")
+                DestroyImmediate(child.gameObject);
+        }
     }
 
     void OnTriggerEnter2D(Collider2D other)

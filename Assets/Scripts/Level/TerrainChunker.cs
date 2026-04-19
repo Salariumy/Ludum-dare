@@ -184,7 +184,7 @@ public class TerrainChunker : MonoBehaviour
         if (entry.type == SpawnType.Crown)
             totalCrownsSpawned++;
 
-        TryAddFog(obj, entry.fogChance);
+        TryAddFog(obj, entry.hasFog);
         spawnedObjects[chunk].Add(obj);
     }
 
@@ -217,19 +217,24 @@ public class TerrainChunker : MonoBehaviour
                 var obj = ObjectPool.Instance
                     ? ObjectPool.Instance.Get(coinPrefab, pos, Quaternion.identity, chunk)
                     : Instantiate(coinPrefab, pos, Quaternion.identity, chunk);
-                TryAddFog(obj, entry.fogChance);
+                TryAddFog(obj, entry.hasFog);
                 spawnedObjects[chunk].Add(obj);
             }
         }
         return (count - 1) * spacing;
     }
 
-    /// <summary>按概率给物体加上白雾</summary>
-    void TryAddFog(GameObject obj, float chance)
+    /// <summary>根据 hasFog 给物体加上白雾</summary>
+    void TryAddFog(GameObject obj, bool hasFog)
     {
-        if (chance <= 0f || Random.value > chance) return;
-
         var existing = obj.GetComponent<FogCover>();
+
+        if (!hasFog)
+        {
+            if (existing != null) DestroyImmediate(existing);
+            return;
+        }
+
         if (existing != null) return;
 
         var fog = obj.AddComponent<FogCover>();

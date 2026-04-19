@@ -7,8 +7,8 @@ public class SpawnEntry
 {
     public SpawnType type;
 
-    [Tooltip("被雾覆盖的概率 (0=无雾, 1=必定有雾)")]
-    [Range(0f, 1f)] public float fogChance;
+    [Tooltip("是否有雾遮罩（true=有雾，false=无雾）")]
+    public bool hasFog;
 
     [Header("金币簇参数（仅 CoinCluster 类型生效）")]
     public int   coinCount  = 5;
