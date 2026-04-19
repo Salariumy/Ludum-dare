@@ -18,6 +18,9 @@ public class GameOverUI : MonoBehaviour
     [SerializeField] private TextMeshProUGUI defeatStatsText;
     [SerializeField] private Button          defeatRetryButton;
 
+    [Header("庆祝动画UI")]
+    [SerializeField] private Animator celebrationAnimator;  // UI Image 上的 Animator，循环播放
+
     [Header("延迟设置")]
     [SerializeField] private float delayBeforeShow = 1f;
 
@@ -66,12 +69,16 @@ public class GameOverUI : MonoBehaviour
         
         yield return new WaitForSeconds(delayBeforeShow);
 
-        // 动画播完后暂停游戏并弹窗
-        Time.timeScale = 0f;
-        
         if (isVictory)
         {
             if (victoryPanel) victoryPanel.SetActive(true);
+            // 在暂停游戏前启动庆祝动画
+            if (celebrationAnimator)
+            {
+                celebrationAnimator.gameObject.SetActive(true);
+                // 直接激活，让动画自动从默认状态播放（需确保 Animator Controller 的 Entry 连到循环动画）
+                // 不使用 SetTrigger，避免参数不存在的问题
+            }
             if (player && victoryStatsText)
                 victoryStatsText.text = $"{player.CoinCount}";
             if (victoryNextButton)
@@ -83,6 +90,9 @@ public class GameOverUI : MonoBehaviour
             if (player && defeatStatsText)
                 defeatStatsText.text = $"{player.CoinCount}";
         }
+
+        // 最后再暂停游戏，此时动画已启动
+        Time.timeScale = 0f;
     }
 
     void OnRetry()

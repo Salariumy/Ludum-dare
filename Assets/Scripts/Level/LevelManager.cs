@@ -11,16 +11,13 @@ public class LevelManager : MonoBehaviour
     [Header("关卡配置（按顺序放入 5 个 LevelData SO）")]
     [SerializeField] private LevelData[] levels;
 
-    [Header("衔接画面对象（场景中一个带 SpriteRenderer 的物体，默认隐藏）")]
-    [SerializeField] private SpriteRenderer transitionRenderer;
-
     [Header("不可摧毁障碍物概率")]
     [SerializeField, Range(0f, 1f)] private float indestructibleChance = 0.25f;
 
     /// <summary>当前关卡索引 (0~4)</summary>
     public int CurrentLevelIndex { get; private set; }
 
-    /// <summary>当前场景段 (A=0, Transition=1, B=2)</summary>
+    /// <summary>当前场景段 (A=0, B=1)</summary>
     public int CurrentSegmentPhase { get; private set; }
 
     /// <summary>当前场景段已循环的次数</summary>
@@ -56,8 +53,6 @@ public class LevelManager : MonoBehaviour
         CurrentSegment = CurrentLevel.segmentA;
         targetCycleCount = CurrentSegment.cycleCount;
 
-        if (transitionRenderer) transitionRenderer.enabled = false;
-
         // 播放当前关卡 BGM
         if (AudioManager.Instance) AudioManager.Instance.PlayBGM(CurrentLevelIndex);
 
@@ -83,22 +78,15 @@ public class LevelManager : MonoBehaviour
     {
         if (CurrentSegmentPhase == 0)
         {
-            // A 段结束 → 显示衔接画面
+            // A 段结束 → 进入 B 段
             CurrentSegmentPhase = 1;
-
-            // 通知衔接（ParallaxBackground 会在最右面板右侧放一个衔接画面）
-            EventBus.Publish(GameEvents.TransitionStart,
-                new TransitionInfo(CurrentLevel.transitionSprite, CurrentLevel.transitionWidth));
-
-            // 衔接只占 1 个 chunk，之后自动进入 B 段
-            CurrentSegmentPhase = 2;
             CurrentCycleCount = 0;
             CurrentSegment = CurrentLevel.segmentB;
             targetCycleCount = CurrentSegment.cycleCount;
 
             EventBus.Publish(GameEvents.SceneSegmentChanged, CurrentSegment);
         }
-        else if (CurrentSegmentPhase == 2)
+        else if (CurrentSegmentPhase == 1)
         {
             // B 段结束 → 关卡完成
             CurrentLevelIndex++;

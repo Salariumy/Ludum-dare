@@ -80,7 +80,10 @@ public class PlayerController : MonoBehaviour
         shieldRoutine  = null;
         jumpCount      = 0;
         fireTimer      = 0;
-        CurrentFrequency = SignalFrequency.High;
+        
+        // 保留当前的射击频段，不要在切关卡时强制重置为High
+        // CurrentFrequency = SignalFrequency.High; // 删除这行
+        
         if (sr) sr.color = Color.white;
         enabled = true;
 
@@ -88,7 +91,7 @@ public class PlayerController : MonoBehaviour
         EventBus.Publish(GameEvents.PlayerHit,        CurrentHealth);
         EventBus.Publish(GameEvents.CoinCollected,    CoinCount);
         EventBus.Publish(GameEvents.CrownCountChanged, CrownCount);
-        EventBus.Publish(GameEvents.FrequencyChanged, CurrentFrequency);
+        // EventBus.Publish(GameEvents.FrequencyChanged, CurrentFrequency); // 删除这行，因为没发生改变就不发广播，避免 UI 错误重置
         EventBus.Publish(GameEvents.ShieldBroken);
     }
 
