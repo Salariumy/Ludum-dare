@@ -9,7 +9,7 @@ using TMPro;
 public class GameHUD : MonoBehaviour
 {
     [Header("血量")]
-    [SerializeField] private Image[] heartIcons;           // 3 个心形图标
+    [SerializeField] private SpriteRenderer[] heartIcons;  // 3 个心形图标
     [SerializeField] private Sprite  heartFull;
     [SerializeField] private Sprite  heartEmpty;
 
