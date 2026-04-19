@@ -1,73 +1,59 @@
-using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
-using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.SceneManagement;
-using UnityEngine.UI;
 
 public class LoadingController : MonoBehaviour
 {
-    [SerializeField] GameObject StartPage;
-    [SerializeField] GameObject LoadingPage;
-    [SerializeField] GameObject TutorPage;
-    [SerializeField] List<PictureAndText> pictureAndTexts=new List<PictureAndText>() ;
-    
-    
-    bool firstTime = true;
-    void Start()
+    [SerializeField] private GameObject LoadingPage;
+    [SerializeField] private List<PictureAndText> pictureAndTexts = new List<PictureAndText>();
+
+    private void Start()
     {
-        if (firstTime)
-        {
-            firstTime = false;
-            StartPage.SetActive(true);
-            StartCoroutine(WaitForPress());
-        }
+        if (LoadingPage != null) LoadingPage.SetActive(true);
+
+        int reached = SaveAPI.GetReachedLevel();
+        int nextScene = reached;
+        StartCoroutine(LoadLevelAsync(nextScene));
     }
-    IEnumerator WaitForPress()
+
+    private IEnumerator LoadLevelAsync(int sceneIndex)
     {
-        while(!Input.anyKeyDown||ResetDataButton.mouseOn)
+        if (LoadingPage != null) LoadingPage.SetActive(true);
+
+        var loadingCtrl = LoadingPage != null ? LoadingPage.GetComponent<LoadingPageController>() : null;
+
+        // apply picture/text if available
+        if (loadingCtrl != null && sceneIndex >= 0 && sceneIndex < pictureAndTexts.Count)
         {
-            yield return null;
+            var pat = pictureAndTexts[sceneIndex];
+            loadingCtrl.applyImage(pat.picture);
+            loadingCtrl.applyText(pat.text);
         }
-        StartPage.SetActive(false);
-        TutorPage.SetActive(true);
-        StartCoroutine(WaitForPress2());
-    }
-    IEnumerator WaitForPress2()
-    {
-        yield return new WaitForSeconds(0.5f);
-        while (!Input.anyKeyDown)
-        {
-            yield return null;
-        }
-        TutorPage.SetActive(false);
-        StartCoroutine(LoadLevelAsync(SaveAPI.GetReachedLevel()));
-    }
-    IEnumerator LoadLevelAsync(int sceneIndex)
-    {
-        LoadingPage.SetActive(true);
-        LoadingPage.GetComponent<LoadingPageController>().applyImage(pictureAndTexts.ElementAt(sceneIndex).picture);
-        LoadingPage.GetComponent<LoadingPageController>().applyText(pictureAndTexts.ElementAt(sceneIndex).text);
-        yield return new WaitForSeconds(0.5f);
-        AsyncOperation operation = SceneManager.LoadSceneAsync(SaveAPI.GetReachedLevel()+1);
+
+        yield return new WaitForSeconds(0.2f);
+
+        AsyncOperation operation = SceneManager.LoadSceneAsync(sceneIndex+2);
         operation.allowSceneActivation = false;
 
         while (!operation.isDone)
         {
             float progress = Mathf.Clamp01(operation.progress / 0.9f);
-            Debug.Log("╪сть╫Ь╤х: " + (progress * 100) + "%");
-            LoadingPage.GetComponent<LoadingPageController>().applyPercent(progress);
+
+            if (loadingCtrl != null)
+                loadingCtrl.applyPercent(progress);
+
+            // when loading reached threshold, wait for any key to activate
             if (operation.progress >= 0.9f && Input.anyKeyDown)
-            {
                 operation.allowSceneActivation = true;
-            }
+
             yield return null;
         }
     }
 }
-[System.Serializable] class PictureAndText
+
+[System.Serializable]
+class PictureAndText
 {
     public Sprite picture;
     public string text;

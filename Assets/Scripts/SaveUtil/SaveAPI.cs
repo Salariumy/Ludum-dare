@@ -1,6 +1,8 @@
 using System;
+using System.Collections;
 using System.IO;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public static class SaveAPI
 {
@@ -33,7 +35,6 @@ public static class SaveAPI
         }
 #endif
     }
-
     // 按平台加载
     private static SaveData LoadDataInternal()
     {
@@ -86,8 +87,22 @@ public static class SaveAPI
         Debug.Log($"SaveAPI: GetReachedLevel() returned {data.highestReached}");
         return data.highestReached;
     }
+    public static IEnumerator Restart()
+    {
+        yield return new WaitForSeconds(0.5f);
+        AsyncOperation operation = SceneManager.LoadSceneAsync(0);
+        operation.allowSceneActivation = false;
 
-    // 清除存档（调试用）
+        while (!operation.isDone)
+        {
+            float progress = Mathf.Clamp01(operation.progress / 0.9f);
+            if (operation.progress >= 0.9f && Input.anyKeyDown)
+            {
+                operation.allowSceneActivation = true;
+            }
+            yield return null;
+        }
+    }
     public static void ClearAll()
     {
 #if UNITY_WEBGL && !UNITY_EDITOR
