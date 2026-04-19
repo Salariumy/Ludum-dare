@@ -22,6 +22,7 @@ public class TerrainChunker : MonoBehaviour
     [SerializeField] private GameObject coinPrefab;
     [SerializeField] private GameObject chestPrefab;
     [SerializeField] private GameObject crownPrefab;
+    [SerializeField] private GameObject bookPrefab;
 
     [Header("白雾 Sprite")]
     [SerializeField] private Sprite fogSprite;
@@ -30,6 +31,7 @@ public class TerrainChunker : MonoBehaviour
     private const int MAX_CROWNS = 3;
     private SpawnPattern currentPattern;
     private int spawnCursor;
+    private float lastCoinEndX = float.NegativeInfinity;
 
     private Camera cam;
     private List<Vector3> initialChunkPositions = new List<Vector3>();
@@ -81,7 +83,17 @@ public class TerrainChunker : MonoBehaviour
         spawnCursor = 0;
         currentPattern = null;
         totalCrownsSpawned = 0;
+        lastCoinEndX = float.NegativeInfinity;
         Physics2D.SyncTransforms();
+
+        // 立即为初始地形块生成内容，但保留一段安全距离（避免刷在玩家脸上产生初见杀）
+        for (int i = 0; i < chunks.Count; i++)
+        {
+            if (chunks[i] != null)
+            {
+                RespawnContent(chunks[i], chunks[i].position.x, 15f);
+            }
+        }
     }
 
     void LateUpdate()
@@ -121,7 +133,7 @@ public class TerrainChunker : MonoBehaviour
     }
 
     /// <summary>清除旧物体，按 SpawnPattern 生成新内容</summary>
-    void RespawnContent(Transform chunk, float chunkStartX)
+    void RespawnContent(Transform chunk, float chunkStartX, float safeStartX = float.NegativeInfinity)
     {
         // 回收上一轮物体到对象池
         if (spawnedObjects.ContainsKey(chunk))
@@ -159,6 +171,11 @@ public class TerrainChunker : MonoBehaviour
 
         float margin = 3f;
         float cursor = chunkStartX + margin;
+        
+        // 应用安全距离（例如刚开局的 15 米内不刷怪，防初见杀）
+        if (cursor < safeStartX)
+            cursor = safeStartX;
+
         float chunkEnd = chunkStartX + chunkWidth - margin;
 
         while (cursor < chunkEnd && HasMoreEntries(pattern))
@@ -174,12 +191,12 @@ public class TerrainChunker : MonoBehaviour
 
             if (entry.type == SpawnType.CoinCluster)
             {
-                float clusterWidth = SpawnCoinCluster(chunk, cursor, entry, pattern.coinSpacing);
+                float clusterWidth = SpawnCoinCluster(chunk, cursor, entry, pattern.coinSpacing, pattern.minCoinClusterDistance);
                 cursor += clusterWidth + 2f;
             }
             else
             {
-                SpawnSingleObject(chunk, cursor, entry);
+                SpawnSingleObject(chunk, cursor, entry, pattern.minCoinClusterDistance);
                 cursor += Random.Range(pattern.minSpacing, pattern.maxSpacing);
             }
 
@@ -200,7 +217,7 @@ public class TerrainChunker : MonoBehaviour
             spawnCursor = 0;
     }
 
-    void SpawnSingleObject(Transform chunk, float x, SpawnEntry entry)
+    void SpawnSingleObject(Transform chunk, float x, SpawnEntry entry, float minCoinDist)
     {
         GameObject prefab = GetPrefab(entry.type);
         if (prefab == null) return;
@@ -215,10 +232,10 @@ public class TerrainChunker : MonoBehaviour
             var obs = obj.GetComponent<Obstacle>();
             if (obs != null && LevelManager.Instance)
             {
-                LevelManager.Instance.GetObstacleConfig(out Sprite sp, out bool indestructible);
+                LevelManager.Instance.GetObstacleConfig(entry.isIndestructible, out Sprite sp);
                 if (sp != null)
                     obs.SetVariants(new Sprite[] { sp });
-                obs.SetIndestructible(indestructible);
+                obs.SetIndestructible(entry.isIndestructible);
             }
         }
 
@@ -227,6 +244,10 @@ public class TerrainChunker : MonoBehaviour
 
         TryAddFog(obj, entry.hasFog);
         spawnedObjects[chunk].Add(obj);
+
+        // 围绕物件生成金币
+        if (entry.hasCoinAround)
+            SpawnCoinAround(chunk, x, entry, minCoinDist);
     }
 
     GameObject GetPrefab(SpawnType type)
@@ -236,15 +257,21 @@ public class TerrainChunker : MonoBehaviour
             case SpawnType.Obstacle: return obstaclePrefab;
             case SpawnType.Chest:    return chestPrefab;
             case SpawnType.Crown:    return crownPrefab;
+            case SpawnType.Book:     return bookPrefab;
             default:                 return null;
         }
     }
 
     /// <summary>生成一簇弧形排列的金币，返回簇的总宽度</summary>
-    float SpawnCoinCluster(Transform chunk, float startX, SpawnEntry entry, float spacing)
+    float SpawnCoinCluster(Transform chunk, float startX, SpawnEntry entry, float spacing, float minCoinDist)
     {
         int count = Mathf.Max(1, entry.coinCount);
         float arcH = entry.arcHeight;
+        float clusterEnd = startX + (count - 1) * spacing;
+
+        // 与上一个金币簇重叠检测
+        if (startX - lastCoinEndX < minCoinDist)
+            return 0f;
 
         for (int i = 0; i < count; i++)
         {
@@ -262,7 +289,54 @@ public class TerrainChunker : MonoBehaviour
                 spawnedObjects[chunk].Add(obj);
             }
         }
+
+        lastCoinEndX = clusterEnd;
         return (count - 1) * spacing;
+    }
+
+    /// <summary>围绕物件生成金币（以物件为中心，前后各 coinAroundCount 枚）</summary>
+    void SpawnCoinAround(Transform chunk, float centerX, SpawnEntry entry, float minCoinDist)
+    {
+        if (!coinPrefab) return;
+
+        int perSide   = Mathf.Max(1, entry.coinAroundCount);
+        float spacing = entry.coinAroundSpacing;
+        float arcH    = entry.coinAroundArcHeight;
+        int totalCoins = perSide * 2;
+
+        float halfSpan = perSide * spacing;
+        float coinStartX = centerX - halfSpan;
+        float coinEndX   = centerX + halfSpan;
+
+        // 与上一个金币簇重叠检测
+        if (coinStartX - lastCoinEndX < minCoinDist)
+            return;
+
+        for (int i = 0; i < totalCoins; i++)
+        {
+            // 均匀分布，跳过正中心（障碍物所在处）
+            float x;
+            if (i < perSide)
+                x = coinStartX + i * spacing;
+            else
+                x = centerX + (i - perSide + 1) * spacing;
+
+            // t ∈ [0,1]，用于计算弧度
+            float t = (float)i / (totalCoins - 1);
+            float y = -2f + arcH * Mathf.Sin(t * Mathf.PI);
+
+            Vector3 pos = new Vector3(x, y, 0f);
+            var obj = ObjectPool.Instance
+                ? ObjectPool.Instance.Get(coinPrefab, pos, Quaternion.identity, chunk)
+                : Instantiate(coinPrefab, pos, Quaternion.identity, chunk);
+            
+            // 独立的金币簇有雾根据配置决定，但作为引导围绕着障碍物生成的辅助金币默认不加雾
+            TryAddFog(obj, false);
+            
+            spawnedObjects[chunk].Add(obj);
+        }
+
+        lastCoinEndX = coinEndX;
     }
 
     /// <summary>根据 hasFog 给物体加上白雾</summary>

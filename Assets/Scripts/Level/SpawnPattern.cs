@@ -1,6 +1,6 @@
 using UnityEngine;
 
-public enum SpawnType { Obstacle, CoinCluster, Chest, Crown }
+public enum SpawnType { Obstacle, CoinCluster, Chest, Crown, Book }
 
 [System.Serializable]
 public class SpawnEntry
@@ -10,9 +10,23 @@ public class SpawnEntry
     [Tooltip("是否有雾遮罩（true=有雾，false=无雾）")]
     public bool hasFog;
 
-    [Header("金币簇参数（仅 CoinCluster 类型生效）")]
+    [Tooltip("是否为不可摧毁障碍物")]
+    public bool isIndestructible;
+
     public int   coinCount  = 5;
     public float arcHeight  = 2f;
+
+    [Tooltip("是否在物件周围生成金币")]
+    public bool hasCoinAround;
+
+    [Tooltip("物件前后各生成的金币数量")]
+    public int coinAroundCount = 3;
+
+    [Tooltip("围绕金币的弧度高度（0 = 无弧度贯穿，>0 = 弧形跳跃引导）")]
+    public float coinAroundArcHeight = 0f;
+
+    [Tooltip("围绕金币的间距")]
+    public float coinAroundSpacing = 1.5f;
 }
 
 /// <summary>
@@ -33,6 +47,9 @@ public class SpawnPattern : ScriptableObject
 
     [Tooltip("金币簇内金币间距")]
     public float coinSpacing = 1.5f;
+
+    [Tooltip("金币簇之间的最小距离（防重叠）")]
+    public float minCoinClusterDistance = 3f;
 
     [Tooltip("生成序列（按顺序出现）")]
     public SpawnEntry[] entries;

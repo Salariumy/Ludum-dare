@@ -15,28 +15,16 @@ public class ParallaxBackground : MonoBehaviour
     [Header("视差系数（0=不动，1=和摄像机同速）")]
     [SerializeField] private float parallaxFactor = 0.5f;
 
-    [Header("衔接画面物体（场景中一个带 SpriteRenderer 的物体，默认隐藏）")]
-    [SerializeField] private Transform transitionPanel;
-
+    private SpriteRenderer[] panelRenderers;
+    private float currentPanelWidth;       // 当前生效的背景宽度
     private Camera cam;
     private float lastCamX;
-    private SpriteRenderer[] panelRenderers;
-    private SpriteRenderer transitionSR;
-    private float currentPanelWidth;       // 当前生效的背景宽度
-    private bool transitionActive;         // 衔接画面是否正在显示
-    private float transitionWidth;         // 衔接画面宽度
 
     void Awake()
     {
         panelRenderers = new SpriteRenderer[bgPanels.Length];
         for (int i = 0; i < bgPanels.Length; i++)
             panelRenderers[i] = bgPanels[i].GetComponent<SpriteRenderer>();
-
-        if (transitionPanel)
-        {
-            transitionSR = transitionPanel.GetComponent<SpriteRenderer>();
-            transitionPanel.gameObject.SetActive(false);
-        }
     }
 
     void Start()
@@ -56,13 +44,11 @@ public class ParallaxBackground : MonoBehaviour
     void OnEnable()
     {
         EventBus.Subscribe(GameEvents.SceneSegmentChanged, OnSegmentChanged);
-        EventBus.Subscribe(GameEvents.TransitionStart, OnTransition);
     }
 
     void OnDisable()
     {
         EventBus.Unsubscribe(GameEvents.SceneSegmentChanged, OnSegmentChanged);
-        EventBus.Unsubscribe(GameEvents.TransitionStart, OnTransition);
     }
 
     void OnSegmentChanged(object data)
@@ -71,34 +57,6 @@ public class ParallaxBackground : MonoBehaviour
         {
             SetAllPanelSprites(segment.backgroundSprite);
             currentPanelWidth = panelWidth;
-
-            // 衔接结束，隐藏衔接物体
-            if (transitionActive && transitionPanel)
-            {
-                transitionPanel.gameObject.SetActive(false);
-                transitionActive = false;
-            }
-        }
-    }
-
-    void OnTransition(object data)
-    {
-        // 衔接画面只出现一次：放在最右面板右侧
-        if (data is TransitionInfo info && info.sprite != null && transitionPanel)
-        {
-            transitionWidth = info.width;
-            transitionSR.sprite = info.sprite;
-            transitionPanel.gameObject.SetActive(true);
-            transitionActive = true;
-
-            // 定位到最右面板右侧
-            float maxX = float.MinValue;
-            foreach (var p in bgPanels)
-            {
-                if (p.position.x > maxX) maxX = p.position.x;
-            }
-            float transX = maxX + currentPanelWidth * 0.5f + transitionWidth * 0.5f;
-            transitionPanel.position = new Vector3(transX, transitionPanel.position.y, transitionPanel.position.z);
         }
     }
 
@@ -106,9 +64,7 @@ public class ParallaxBackground : MonoBehaviour
     {
         if (panelRenderers == null) return;
         foreach (var sr in panelRenderers)
-        {
-            if (sr != null) sr.sprite = sprite;
-        }
+            if (sr) sr.sprite = sprite;
     }
 
     void LateUpdate()
@@ -143,31 +99,8 @@ public class ParallaxBackground : MonoBehaviour
         {
             if (leftmost.position.x + currentPanelWidth * 0.5f < camLeft)
             {
-                // 如果衔接画面正在显示，接在衔接画面右侧
-                float rightEdge;
-                if (transitionActive && transitionPanel && transitionPanel.position.x > maxX)
-                {
-                    rightEdge = transitionPanel.position.x + transitionWidth * 0.5f + currentPanelWidth * 0.5f;
-                }
-                else
-                {
-                    rightEdge = rightmost.position.x + currentPanelWidth;
-                }
+                float rightEdge = rightmost.position.x + currentPanelWidth;
                 leftmost.position = new Vector3(rightEdge, leftmost.position.y, leftmost.position.z);
-            }
-        }
-
-        // 衔接画面也随视差移动
-        if (transitionActive && transitionPanel)
-        {
-            transitionPanel.position += Vector3.right * deltaX * parallaxFactor;
-
-            // 衔接画面离开屏幕后自动隐藏
-            float transLeft = transitionPanel.position.x + transitionWidth * 0.5f;
-            if (transLeft < camLeft)
-            {
-                transitionPanel.gameObject.SetActive(false);
-                transitionActive = false;
             }
         }
     }

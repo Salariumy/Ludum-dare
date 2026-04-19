@@ -1,19 +1,5 @@
 using UnityEngine;
 
-/// <summary>
-/// 衔接画面事件数据
-/// </summary>
-public class TransitionInfo
-{
-    public Sprite sprite;
-    public float  width;
-
-    public TransitionInfo(Sprite sprite, float width)
-    {
-        this.sprite = sprite;
-        this.width  = width;
-    }
-}
 
 /// <summary>
 /// 一个关卡内的单个场景段配置
@@ -36,7 +22,7 @@ public class SceneSegment
 
 /// <summary>
 /// 单个关卡的完整配置（ScriptableObject）
-/// 包含 2 个场景段 + 衔接画面
+/// 只包含 2 个场景段，无过渡画面
 /// </summary>
 [CreateAssetMenu(fileName = "Level_01", menuName = "Game/Level Data")]
 public class LevelData : ScriptableObject
@@ -46,12 +32,6 @@ public class LevelData : ScriptableObject
 
     [Tooltip("场景段 A（先播放）")]
     public SceneSegment segmentA;
-
-    [Tooltip("衔接画面 Sprite（A→B 之间出现一次）")]
-    public Sprite transitionSprite;
-
-    [Tooltip("衔接画面的世界宽度（可能和普通背景不同）")]
-    public float transitionWidth = 20f;
 
     [Tooltip("场景段 B（衔接后播放）")]
     public SceneSegment segmentB;

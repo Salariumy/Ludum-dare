@@ -11,9 +11,6 @@ public class LevelManager : MonoBehaviour
     [Header("关卡配置（按顺序放入 5 个 LevelData SO）")]
     [SerializeField] private LevelData[] levels;
 
-    [Header("不可摧毁障碍物概率")]
-    [SerializeField, Range(0f, 1f)] private float indestructibleChance = 0.25f;
-
     /// <summary>当前关卡索引 (0~4)</summary>
     public int CurrentLevelIndex { get; private set; }
 
@@ -103,29 +100,29 @@ public class LevelManager : MonoBehaviour
         }
     }
 
-    /// <summary>获取当前场景段的障碍物 Sprite（随机选可摧毁或不可摧毁）</summary>
-    public void GetObstacleConfig(out Sprite sprite, out bool indestructible)
+    /// <summary>根据指定的可摧毁性，从当前场景段获取对应 Sprite</summary>
+    public void GetObstacleConfig(bool isIndestructible, out Sprite sprite)
     {
-        indestructible = false;
         sprite = null;
-
         if (CurrentSegment == null) return;
 
-        bool hasDestructible = CurrentSegment.destructibleObstacleSprites != null
-                            && CurrentSegment.destructibleObstacleSprites.Length > 0;
-        bool hasIndestructible = CurrentSegment.indestructibleObstacleSprites != null
-                              && CurrentSegment.indestructibleObstacleSprites.Length > 0;
-
-        if (hasIndestructible && Random.value < indestructibleChance)
+        if (isIndestructible)
         {
-            indestructible = true;
-            sprite = CurrentSegment.indestructibleObstacleSprites[
-                Random.Range(0, CurrentSegment.indestructibleObstacleSprites.Length)];
+            if (CurrentSegment.indestructibleObstacleSprites != null
+                && CurrentSegment.indestructibleObstacleSprites.Length > 0)
+            {
+                sprite = CurrentSegment.indestructibleObstacleSprites[
+                    Random.Range(0, CurrentSegment.indestructibleObstacleSprites.Length)];
+            }
         }
-        else if (hasDestructible)
+        else
         {
-            sprite = CurrentSegment.destructibleObstacleSprites[
-                Random.Range(0, CurrentSegment.destructibleObstacleSprites.Length)];
+            if (CurrentSegment.destructibleObstacleSprites != null
+                && CurrentSegment.destructibleObstacleSprites.Length > 0)
+            {
+                sprite = CurrentSegment.destructibleObstacleSprites[
+                    Random.Range(0, CurrentSegment.destructibleObstacleSprites.Length)];
+            }
         }
     }
 
