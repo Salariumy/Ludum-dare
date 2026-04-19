@@ -28,6 +28,7 @@ MonoBehaviour:
     - {fileID: 21300000, guid: 564beeabdce5e774e8241748b171c5a1, type: 3}
     - {fileID: 21300000, guid: 55754502ce3729547823470e863a0c7b, type: 3}
     - {fileID: 21300000, guid: 543cc1f65a215d248bb2d6baa0f89d24, type: 3}
-    indestructibleObstacleSprites: []
+    indestructibleObstacleSprites:
+    - {fileID: 0}
     cycleCount: 10
   spawnPattern: {fileID: 11400000, guid: f31be4dd798ff064f98669a0bca0a9a1, type: 2}

@@ -14,15 +14,19 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   levelIndex: 2
   segmentA:
-    backgroundSprite: {fileID: 21300000, guid: efe056c93cb410342be342364f9149a4, type: 3}
-    destructibleObstacleSprites: []
-    indestructibleObstacleSprites: []
-    cycleCount: 5
-  transitionSprite: {fileID: 7482667652216324306, guid: 4fffcc5fb82de80429756f300d3eef1a, type: 3}
-  transitionWidth: 20
+    backgroundSprite: {fileID: 21300000, guid: 346442ec981537646855d6483f451965, type: 3}
+    destructibleObstacleSprites:
+    - {fileID: 21300000, guid: f8f73d3187befa54a9595fcf9a8ccd84, type: 3}
+    - {fileID: 21300000, guid: f1ef684a66f6a1f4f815100deea4381b, type: 3}
+    - {fileID: 21300000, guid: 624f861a673d3664c83b9b0fdce8508e, type: 3}
+    indestructibleObstacleSprites:
+    - {fileID: 21300000, guid: 624ac4efaf4594948945b785a738f58d, type: 3}
+    - {fileID: 21300000, guid: e86ec16471f47404585137c8be3f6a4c, type: 3}
+    - {fileID: 21300000, guid: e200f5ef36f1c4249bc1adc417f6bdae, type: 3}
+    cycleCount: 10
   segmentB:
-    backgroundSprite: {fileID: 21300000, guid: efe056c93cb410342be342364f9149a4, type: 3}
+    backgroundSprite: {fileID: 21300000, guid: 27d44d0cd34dd764391bce2d1fb76bb0, type: 3}
     destructibleObstacleSprites: []
     indestructibleObstacleSprites: []
     cycleCount: 10
-  spawnPattern: {fileID: 11400000, guid: af08d4f94873ca14bba872d7eab620ec, type: 2}
+  spawnPattern: {fileID: 11400000, guid: e7f3b923c4a432a4c91c5d4ba29660cb, type: 2}
