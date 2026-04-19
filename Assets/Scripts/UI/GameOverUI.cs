@@ -7,11 +7,19 @@ using TMPro;
 /// </summary>
 public class GameOverUI : MonoBehaviour
 {
-    [SerializeField] private GameObject      panel;
-    [SerializeField] private TextMeshProUGUI titleText;
-    [SerializeField] private TextMeshProUGUI statsText;
-    [SerializeField] private Button          retryButton;
-    [SerializeField] private Button          nextLevelButton;
+    [Header("胜利面板")]
+    [SerializeField] private GameObject      victoryPanel;
+    [SerializeField] private TextMeshProUGUI victoryStatsText;
+    [SerializeField] private Button          victoryNextButton;
+    [SerializeField] private Button          victoryRetryButton;
+
+    [Header("失败面板")]
+    [SerializeField] private GameObject      defeatPanel;
+    [SerializeField] private TextMeshProUGUI defeatStatsText;
+    [SerializeField] private Button          defeatRetryButton;
+
+    [Header("延迟设置")]
+    [SerializeField] private float delayBeforeShow = 1f;
 
     void OnEnable()
     {
@@ -27,44 +35,66 @@ public class GameOverUI : MonoBehaviour
 
     void Start()
     {
-        panel.SetActive(false);
-        retryButton.onClick.AddListener(OnRetry);
-        nextLevelButton.onClick.AddListener(OnNextLevel);
+        if (victoryPanel) victoryPanel.SetActive(false);
+        if (defeatPanel) defeatPanel.SetActive(false);
+
+        if (victoryNextButton) victoryNextButton.onClick.AddListener(OnNextLevel);
+        if (victoryRetryButton) victoryRetryButton.onClick.AddListener(OnRetry);
+        if (defeatRetryButton) defeatRetryButton.onClick.AddListener(OnRetry);
     }
 
     void OnPlayerDied(object data)
     {
-        Show("游戏结束", false);
+        StartCoroutine(ShowPanelDelayed(false));
     }
 
     void OnLevelCompleted(object data)
     {
-
-        Show("关卡完成!", true);
+        StartCoroutine(ShowPanelDelayed(true));
     }
 
-    void Show(string title, bool showNext)
+    System.Collections.IEnumerator ShowPanelDelayed(bool isVictory)
     {
-        Time.timeScale = 0f;
-        panel.SetActive(true);
-        titleText.text = title;
-
+        // 挂起一部分玩家控制，这里等待死亡或开书动画播完
         var player = FindObjectOfType<PlayerController>();
-        if (player && statsText)
-            statsText.text = $"里程: {Mathf.FloorToInt(player.Distance)} m\n金币: {player.CoinCount}";
+        if (player)
+        {
+            player.enabled = false; // 禁用玩家位移和输入
+            var rb = player.GetComponent<Rigidbody2D>();
+            if (rb) rb.velocity = new Vector2(0, rb.velocity.y); // 停下水平移动，允许落地
+        }
+        
+        yield return new WaitForSeconds(delayBeforeShow);
 
-        nextLevelButton.gameObject.SetActive(showNext && LevelManager.Instance != null && LevelManager.Instance.HasNextLevel);
+        // 动画播完后暂停游戏并弹窗
+        Time.timeScale = 0f;
+        
+        if (isVictory)
+        {
+            if (victoryPanel) victoryPanel.SetActive(true);
+            if (player && victoryStatsText)
+                victoryStatsText.text = $"{player.CoinCount}";
+            if (victoryNextButton)
+                victoryNextButton.gameObject.SetActive(LevelManager.Instance != null && LevelManager.Instance.HasNextLevel);
+        }
+        else
+        {
+            if (defeatPanel) defeatPanel.SetActive(true);
+            if (player && defeatStatsText)
+                defeatStatsText.text = $"{player.CoinCount}";
+        }
     }
 
     void OnRetry()
     {
-        Time.timeScale = 1f;
+        if (victoryPanel) victoryPanel.SetActive(false);
+        if (defeatPanel) defeatPanel.SetActive(false);
         LevelManager.Instance.ReloadLevel();
     }
 
     void OnNextLevel()
     {
-        Time.timeScale = 1f;
+        if (victoryPanel) victoryPanel.SetActive(false);
         LevelManager.Instance.LoadNextLevel();
     }
 }

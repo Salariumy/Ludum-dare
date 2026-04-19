@@ -32,6 +32,7 @@ public class TerrainChunker : MonoBehaviour
     private int spawnCursor;
 
     private Camera cam;
+    private List<Vector3> initialChunkPositions = new List<Vector3>();
 
     // 每个 chunk 下动态生成的物体，回收时销毁
     private Dictionary<Transform, List<GameObject>> spawnedObjects = new Dictionary<Transform, List<GameObject>>();
@@ -40,7 +41,47 @@ public class TerrainChunker : MonoBehaviour
     {
         cam = Camera.main;
         foreach (var c in chunks)
+        {
             spawnedObjects[c] = new List<GameObject>();
+            initialChunkPositions.Add(c.position); // 记录初始位置
+        }
+    }
+
+    /// <summary>重置所有 chunk 到初始位置并清空生成物</summary>
+    public void ResetChunks()
+    {
+        // 回收所有已生成物体
+        foreach (var c in chunks)
+        {
+            if (spawnedObjects.ContainsKey(c))
+            {
+                foreach (var obj in spawnedObjects[c])
+                {
+                    if (obj != null)
+                    {
+                        var fogs = obj.GetComponents<FogCover>();
+                        foreach (var fog in fogs)
+                            DestroyImmediate(fog);
+                        if (ObjectPool.Instance)
+                            ObjectPool.Instance.Return(obj);
+                        else
+                            Destroy(obj);
+                    }
+                }
+                spawnedObjects[c].Clear();
+            }
+        }
+        // 恢复 chunk 初始位置
+        for (int i = 0; i < chunks.Count; i++)
+        {
+            if (chunks[i] != null && i < initialChunkPositions.Count)
+                chunks[i].position = initialChunkPositions[i];
+        }
+        // 重置生成状态
+        spawnCursor = 0;
+        currentPattern = null;
+        totalCrownsSpawned = 0;
+        Physics2D.SyncTransforms();
     }
 
     void LateUpdate()

@@ -1,5 +1,4 @@
 using UnityEngine;
-using UnityEngine.SceneManagement;
 
 /// <summary>
 /// 关卡流程控制器
@@ -151,10 +150,11 @@ public class LevelManager : MonoBehaviour
     /// <summary>是否还有下一关</summary>
     public bool HasNextLevel => levels != null && CurrentLevelIndex < levels.Length - 1;
 
-    /// <summary>重新开始当前关卡</summary>
+    /// <summary>重置当前关卡内所有状态</summary>
     public void ReloadLevel()
     {
-        SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
+        ResetGameState();
+        StartLevel();
     }
 
     /// <summary>加载下一关</summary>
@@ -162,7 +162,8 @@ public class LevelManager : MonoBehaviour
     {
         if (!HasNextLevel) return;
         CurrentLevelIndex++;
-        SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
+        ResetGameState();
+        StartLevel();
     }
 
     /// <summary>加载指定关卡</summary>
@@ -170,6 +171,22 @@ public class LevelManager : MonoBehaviour
     {
         if (levels == null || index < 0 || index >= levels.Length) return;
         CurrentLevelIndex = index;
-        SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
+        ResetGameState();
+        StartLevel();
+    }
+
+    /// <summary>原地重置玩家和地形，不需要切换场景</summary>
+    private void ResetGameState()
+    {
+        Time.timeScale = 1f;
+
+        var chunker = FindObjectOfType<TerrainChunker>();
+        if (chunker) chunker.ResetChunks();
+
+        var player = FindObjectOfType<PlayerController>();
+        if (player) player.ResetState();
+
+        var playerAnim = FindObjectOfType<PlayerAnimator>();
+        if (playerAnim) playerAnim.ResetState();
     }
 }

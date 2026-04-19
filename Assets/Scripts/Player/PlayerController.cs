@@ -48,6 +48,7 @@ public class PlayerController : MonoBehaviour
     private bool  isInvincible;
     private float startX;
     private Coroutine shieldRoutine;
+    private Vector3 spawnPosition;
 
     void Awake()
     {
@@ -57,9 +58,38 @@ public class PlayerController : MonoBehaviour
         waveAnimator  = FindObjectOfType<WaveAnimator>();
         CurrentHealth = maxHealth;
         startX        = transform.position.x;
+        spawnPosition = transform.position;
 
         // 确保物理引擎在 transform 移动后自动同步碰撞体
         Physics2D.autoSyncTransforms = true;
+    }
+
+    /// <summary>重置玩家状态到出生点（关卡重试/下一关时调用）</summary>
+    public void ResetState()
+    {
+        StopAllCoroutines();
+        transform.position = spawnPosition;
+        if (rb) rb.velocity = Vector2.zero;
+        CurrentHealth  = maxHealth;
+        CoinCount      = 0;
+        CrownCount     = 0;
+        Distance       = 0;
+        startX         = spawnPosition.x;
+        isInvincible   = false;
+        HasShield      = false;
+        shieldRoutine  = null;
+        jumpCount      = 0;
+        fireTimer      = 0;
+        CurrentFrequency = SignalFrequency.High;
+        if (sr) sr.color = Color.white;
+        enabled = true;
+
+        // 同步 UI
+        EventBus.Publish(GameEvents.PlayerHit,        CurrentHealth);
+        EventBus.Publish(GameEvents.CoinCollected,    CoinCount);
+        EventBus.Publish(GameEvents.CrownCountChanged, CrownCount);
+        EventBus.Publish(GameEvents.FrequencyChanged, CurrentFrequency);
+        EventBus.Publish(GameEvents.ShieldBroken);
     }
 
     void OnEnable()

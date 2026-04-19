@@ -104,6 +104,20 @@ public class PlayerAnimator : MonoBehaviour
         if (!isDead) anim.SetTrigger(HashPulse);
     }
 
+    // ── 重置动画状态（关卡重置时调用）──
+    public void ResetState()
+    {
+        isDead = false;
+        wasGrounded = true;
+        lastHealth = controller.CurrentHealth;
+        anim.SetBool(HashDead, false);
+        anim.SetBool(HashSuccess, false);
+        anim.SetFloat(HashYVelocity, 0f);
+        anim.SetBool(HashGrounded, true);
+        anim.SetFloat(HashSpeed, controller.GetComponent<Rigidbody2D>() ? 5f : 1f);
+        anim.Play("Run", 0, 0f);
+    }
+
     // ── 通关成功 ──
     private void OnLevelCompleted(object _)
     {
