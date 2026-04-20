@@ -41,6 +41,12 @@ public class LevelData : ScriptableObject
     [TextArea(3, 6)]
     public string introText;
 
+    [Tooltip("拍照后结果页背景色")]
+    public Color introResultBgColor = Color.white;
+
+    [Tooltip("拍立得相纸 Sprite（拍照后从相机滑出）")]
+    public Sprite polaroidSprite;
+
     [Header("关卡字幕")]
     [Tooltip("该关卡游戏中滚动播放的字幕台词序列")]
     public SubtitlePlayer.SubtitleLine[] subtitleLines;
