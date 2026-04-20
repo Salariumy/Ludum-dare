@@ -12,7 +12,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 608dd75ed9b48f64d8c875e675f97663, type: 3}
   m_Name: Level_05
   m_EditorClassIdentifier: 
-  levelIndex: 2
+  levelIndex: 5
+  introAnimator: {fileID: 0}
+  introImage: {fileID: 0}
+  introText: Two signals merge into one eternal peace.
+  subtitleLines: []
   segmentA:
     backgroundSprite: {fileID: 21300000, guid: efe056c93cb410342be342364f9149a4, type: 3}
     destructibleObstacleSprites: []

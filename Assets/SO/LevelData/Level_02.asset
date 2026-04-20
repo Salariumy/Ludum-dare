@@ -13,6 +13,22 @@ MonoBehaviour:
   m_Name: Level_02
   m_EditorClassIdentifier: 
   levelIndex: 2
+  introAnimator: {fileID: 9100000, guid: f5f915e2284adbd448370bb6127cae7f, type: 2}
+  introImage: {fileID: 21300000, guid: 994e3c1070b48894e9c4971e2be04788, type: 3}
+  introText: Every step hums a signal of our youthful days.
+  subtitleLines:
+  - text: 'Later, I spent my years in the countryside yard, '
+    delayAfter: 10
+  - text: and bathed in the warm sunlight.
+    delayAfter: 10
+  - text: "No papers, no reports\u2014"
+    delayAfter: 10
+  - text: "only wheat in the wind and my cat\u2019s soft purr."
+    delayAfter: 10
+  - text: 'Those were my peaceful, quiet twilight years, '
+    delayAfter: 10
+  - text: wrapped in gentle signals.
+    delayAfter: 10
   segmentA:
     backgroundSprite: {fileID: 21300000, guid: d77b025f2d60b2945ba576a8717e5aa9, type: 3}
     destructibleObstacleSprites:

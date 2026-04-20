@@ -12,7 +12,25 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 608dd75ed9b48f64d8c875e675f97663, type: 3}
   m_Name: Level_04
   m_EditorClassIdentifier: 
-  levelIndex: 2
+  levelIndex: 4
+  introAnimator: {fileID: 0}
+  introImage: {fileID: 0}
+  introText: I follow the old signal to find you again.
+  subtitleLines:
+  - text: 'I always think of that old school hallway, '
+    delayAfter: 8
+  - text: 'a time lost forever, '
+    delayAfter: 5
+  - text: with friendships I can never reclaim.
+    delayAfter: 8
+  - text: 'Back then, I walked home unafraid, '
+    delayAfter: 8
+  - text: full of endless hope for whatever came next.
+    delayAfter: 8
+  - text: 'The most precious thing of all was my young, fearless soul, '
+    delayAfter: 8
+  - text: glowing with bright signals.
+    delayAfter: 8
   segmentA:
     backgroundSprite: {fileID: 21300000, guid: 346442ec981537646855d6483f451965, type: 3}
     destructibleObstacleSprites:
@@ -26,7 +44,10 @@ MonoBehaviour:
     cycleCount: 10
   segmentB:
     backgroundSprite: {fileID: 21300000, guid: 27d44d0cd34dd764391bce2d1fb76bb0, type: 3}
-    destructibleObstacleSprites: []
-    indestructibleObstacleSprites: []
+    destructibleObstacleSprites:
+    - {fileID: 21300000, guid: 6b600718bc14d0e4eb2a9992fc6dddb2, type: 3}
+    - {fileID: 21300000, guid: 8bbe0d914586f6d4eacef97e975ad178, type: 3}
+    indestructibleObstacleSprites:
+    - {fileID: 21300000, guid: 532c14d65d5154e45869b95b99c7419f, type: 3}
     cycleCount: 10
   spawnPattern: {fileID: 11400000, guid: e7f3b923c4a432a4c91c5d4ba29660cb, type: 2}

@@ -12,7 +12,25 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 608dd75ed9b48f64d8c875e675f97663, type: 3}
   m_Name: Level_03
   m_EditorClassIdentifier: 
-  levelIndex: 2
+  levelIndex: 3
+  introAnimator: {fileID: 0}
+  introImage: {fileID: 0}
+  introText: Lost in the noise, but still chasing a faint signal.
+  subtitleLines:
+  - text: I hurried along this road for over a decade,
+    delayAfter: 10
+  - text: too tired to look up at the moon.
+    delayAfter: 10
+  - text: "I thought meaning lay ahead\u2014"
+    delayAfter: 10
+  - text: tired but driven, my goals faint and fleeting,
+    delayAfter: 10
+  - text: ' just like a weak life signal.'
+    delayAfter: 10
+  - text: 'Only later did I learn: '
+    delayAfter: 10
+  - text: to live simply, is a rare and precious thing.
+    delayAfter: 10
   segmentA:
     backgroundSprite: {fileID: 21300000, guid: efe056c93cb410342be342364f9149a4, type: 3}
     destructibleObstacleSprites:

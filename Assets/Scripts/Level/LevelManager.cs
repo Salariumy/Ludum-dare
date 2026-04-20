@@ -37,18 +37,54 @@ public class LevelManager : MonoBehaviour
 
     void Start()
     {
-        CurrentLevelIndex = 0;
-        StartLevel();
+        // 不自动启动，由 MainMenuUI 调用 LoadLevel 触发
     }
 
-    void StartLevel()
+    /// <summary>显示关卡介绍面板，点击 Next 后真正开始关卡</summary>
+    private void ShowIntroThenStart()
     {
         if (CurrentLevel == null) return;
+
+        if (AudioManager.Instance) AudioManager.Instance.SetGameplaySfxBlocked(true);
+
+        if (LevelIntroUI.Instance)
+        {
+            LevelIntroUI.Instance.Show(CurrentLevel, BeginLevel);
+        }
+        else
+        {
+            // 没有介绍面板时直接开始
+            BeginLevel();
+        }
+    }
+
+    /// <summary>真正启动关卡（介绍面板关闭后调用）</summary>
+    private void BeginLevel()
+    {
+        if (CurrentLevel == null) return;
+
+        if (AudioManager.Instance) AudioManager.Instance.SetGameplaySfxBlocked(false);
 
         CurrentSegmentPhase = 0;
         CurrentCycleCount = 0;
         CurrentSegment = CurrentLevel.segmentA;
         targetCycleCount = CurrentSegment.cycleCount;
+
+        // 确保血量 HUD 与实际数值同步（防止过关/重来后 UI 未刷新）
+        var player = FindObjectOfType<PlayerController>();
+        if (player)
+        {
+            EventBus.Publish(GameEvents.PlayerHit,          player.CurrentHealth);
+            EventBus.Publish(GameEvents.CoinCollected,      player.CoinCount);
+            EventBus.Publish(GameEvents.CrownCountChanged,  player.CrownCount);
+        }
+
+        // 播放当前关卡字幕
+        var subtitle = FindObjectOfType<SubtitlePlayer>(true);
+        if (subtitle && CurrentLevel.subtitleLines != null && CurrentLevel.subtitleLines.Length > 0)
+        {
+            subtitle.Play(CurrentLevel.subtitleLines);
+        }
 
         // 播放当前关卡 BGM
         if (AudioManager.Instance) AudioManager.Instance.PlayBGM(CurrentLevelIndex);
@@ -86,11 +122,11 @@ public class LevelManager : MonoBehaviour
         else if (CurrentSegmentPhase == 1)
         {
             // B 段结束 → 关卡完成
-            CurrentLevelIndex++;
-            if (CurrentLevelIndex < levels.Length)
+            if (CurrentLevelIndex < levels.Length - 1)
             {
+                // 发布通关事件，不立即启动下一关
+                // GameOverUI 会弹出结算面板，玩家点击"下一关"后触发 LoadNextLevel
                 EventBus.Publish(GameEvents.LevelCompleted, CurrentLevelIndex);
-                StartLevel();
             }
             else
             {
@@ -135,35 +171,42 @@ public class LevelManager : MonoBehaviour
     /// <summary>是否还有下一关</summary>
     public bool HasNextLevel => levels != null && CurrentLevelIndex < levels.Length - 1;
 
-    /// <summary>重置当前关卡内所有状态</summary>
+    /// <summary>重试当前关卡（无介绍面板）</summary>
     public void ReloadLevel()
     {
+        if (AudioManager.Instance) AudioManager.Instance.SetGameplaySfxBlocked(false);
         ResetGameState();
-        StartLevel();
+        BeginLevel();
     }
 
-    /// <summary>加载下一关</summary>
+    /// <summary>加载下一关（先显示介绍面板）</summary>
     public void LoadNextLevel()
     {
         if (!HasNextLevel) return;
         CurrentLevelIndex++;
+        if (AudioManager.Instance) AudioManager.Instance.SetGameplaySfxBlocked(true);
         ResetGameState();
-        StartLevel();
+        ShowIntroThenStart();
     }
 
-    /// <summary>加载指定关卡</summary>
+    /// <summary>加载指定关卡（先显示介绍面板）</summary>
     public void LoadLevel(int index)
     {
         if (levels == null || index < 0 || index >= levels.Length) return;
         CurrentLevelIndex = index;
+        if (AudioManager.Instance) AudioManager.Instance.SetGameplaySfxBlocked(true);
         ResetGameState();
-        StartLevel();
+        ShowIntroThenStart();
     }
 
     /// <summary>原地重置玩家和地形，不需要切换场景</summary>
     private void ResetGameState()
     {
         Time.timeScale = 1f;
+
+        // 停止正在播放的字幕
+        var subtitle = FindObjectOfType<SubtitlePlayer>(true);
+        if (subtitle) subtitle.Stop();
 
         var chunker = FindObjectOfType<TerrainChunker>();
         if (chunker) chunker.ResetChunks();

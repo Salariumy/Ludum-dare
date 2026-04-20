@@ -1,6 +1,8 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
+using UnityEngine.UI;
 
 /// <summary>
 /// 全局音频管理器（单例）
@@ -53,6 +55,8 @@ public class AudioManager : MonoBehaviour
     private AudioSource activeBgmSource;
     private AudioSource typingAudioSource;  // 打字音效专用 source
     private List<AudioSource> sfxPool;
+    private bool gameplaySfxBlocked;
+    private readonly HashSet<int> boundButtonIds = new HashSet<int>();
 
     // ══════════════════════════════════════════
     //  生命周期
@@ -88,6 +92,9 @@ public class AudioManager : MonoBehaviour
         EventBus.Subscribe(GameEvents.FrequencyChanged,  OnFrequencyChanged);
         EventBus.Subscribe(GameEvents.ShieldActivated,   OnShieldActivated);
         EventBus.Subscribe(GameEvents.LevelCompleted,    OnLevelCompleted);
+
+        SceneManager.sceneLoaded += OnSceneLoaded;
+        BindButtonClickSfxInScene();
     }
 
     void OnDisable()
@@ -100,6 +107,8 @@ public class AudioManager : MonoBehaviour
         EventBus.Unsubscribe(GameEvents.FrequencyChanged,  OnFrequencyChanged);
         EventBus.Unsubscribe(GameEvents.ShieldActivated,   OnShieldActivated);
         EventBus.Unsubscribe(GameEvents.LevelCompleted,    OnLevelCompleted);
+
+        SceneManager.sceneLoaded -= OnSceneLoaded;
     }
 
     // ══════════════════════════════════════════
@@ -132,6 +141,16 @@ public class AudioManager : MonoBehaviour
     
     /// <summary>播放玩家受击/扣血音效（用于UI结算动画）</summary>
     public void PlayPlayerHit()        => PlaySFX(sfxHit);
+
+    /// <summary>播放按钮点击音效（统一使用频段切换音效）</summary>
+    public void PlayUIButtonClick()    => PlaySFX(sfxFrequencyShift);
+
+    /// <summary>控制是否屏蔽游戏流程音效（Intro 面板期间建议开启）</summary>
+    public void SetGameplaySfxBlocked(bool blocked)
+    {
+        // 仅屏蔽游戏内事件音效，保留打字机等UI相关的持续音效
+        gameplaySfxBlocked = blocked;
+    }
 
     /// <summary>开始播放打字音效（长音效，持续播放）</summary>
     public void PlayTypingStart()
@@ -177,13 +196,47 @@ public class AudioManager : MonoBehaviour
     //  EventBus 回调
     // ══════════════════════════════════════════
 
-    private void OnPlayerHit(object _)          => PlaySFX(sfxHit);
-    private void OnPlayerDied(object _)         => PlaySFX(sfxDeath);
-    private void OnCoinCollected(object _)      => PlaySFX(sfxCoinCollect);
-    private void OnCrownCollected(object _)     => PlaySFX(sfxCrownCollect);
-    private void OnChestOpened(object _)        => PlaySFX(sfxChestOpen);
-    private void OnFrequencyChanged(object _)   => PlaySFX(sfxFrequencyShift);
-    private void OnShieldActivated(object _)    => PlaySFX(sfxShieldActivate);
+    private void OnPlayerHit(object _)
+    {
+        if (gameplaySfxBlocked) return;
+        PlaySFX(sfxHit);
+    }
+
+    private void OnPlayerDied(object _)
+    {
+        if (gameplaySfxBlocked) return;
+        PlaySFX(sfxDeath);
+    }
+
+    private void OnCoinCollected(object _)
+    {
+        if (gameplaySfxBlocked) return;
+        PlaySFX(sfxCoinCollect);
+    }
+
+    private void OnCrownCollected(object _)
+    {
+        if (gameplaySfxBlocked) return;
+        PlaySFX(sfxCrownCollect);
+    }
+
+    private void OnChestOpened(object _)
+    {
+        if (gameplaySfxBlocked) return;
+        PlaySFX(sfxChestOpen);
+    }
+
+    private void OnFrequencyChanged(object _)
+    {
+        if (gameplaySfxBlocked) return;
+        PlaySFX(sfxFrequencyShift);
+    }
+
+    private void OnShieldActivated(object _)
+    {
+        if (gameplaySfxBlocked) return;
+        PlaySFX(sfxShieldActivate);
+    }
 
     private void OnLevelCompleted(object _)
     {
@@ -281,5 +334,26 @@ public class AudioManager : MonoBehaviour
         }
         source.Stop();
         source.volume = 0f;
+    }
+
+    private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
+    {
+        BindButtonClickSfxInScene();
+    }
+
+    private void BindButtonClickSfxInScene()
+    {
+        var buttons = FindObjectsOfType<Button>(true);
+        for (int i = 0; i < buttons.Length; i++)
+        {
+            var btn = buttons[i];
+            if (btn == null) continue;
+
+            int id = btn.GetInstanceID();
+            if (boundButtonIds.Contains(id)) continue;
+
+            btn.onClick.AddListener(PlayUIButtonClick);
+            boundButtonIds.Add(id);
+        }
     }
 }

@@ -13,6 +13,22 @@ MonoBehaviour:
   m_Name: Level_01
   m_EditorClassIdentifier: 
   levelIndex: 1
+  introAnimator: {fileID: 9100000, guid: 155cd6bde9a2510459e1efaeca96b026, type: 2}
+  introImage: {fileID: 21300000, guid: a2fec31b58bc4a1488cfa51202d4c57f, type: 3}
+  introText: The road back to the warmest days of my life.
+  subtitleLines:
+  - text: 'I died in this very hospital, '
+    delayAfter: 8
+  - text: just a few floors above where I was born.
+    delayAfter: 8
+  - text: "I walked a lifetime\u2019s journey, "
+    delayAfter: 8
+  - text: only to return to where it all began.
+    delayAfter: 8
+  - text: "The only signal I couldn\u2019t let go was my cat, "
+    delayAfter: 8
+  - text: waiting faithfully at home.
+    delayAfter: 8
   segmentA:
     backgroundSprite: {fileID: 21300000, guid: 48a0e551b36ca4e4ab5ba4355beb53c7, type: 3}
     destructibleObstacleSprites:

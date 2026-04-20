@@ -30,6 +30,21 @@ public class LevelData : ScriptableObject
     [Tooltip("关卡编号（1~5）")]
     public int levelIndex;
 
+    [Header("关卡前序介绍")]
+    [Tooltip("介绍页面显示的动画控制器（用于 Image 的 Animator）")]
+    public RuntimeAnimatorController introAnimator;
+
+    [Tooltip("介绍页面显示的 Sprite（无动画时作为静态图片）")]
+    public Sprite introImage;
+
+    [Tooltip("介绍页面的文字内容")]
+    [TextArea(3, 6)]
+    public string introText;
+
+    [Header("关卡字幕")]
+    [Tooltip("该关卡游戏中滚动播放的字幕台词序列")]
+    public SubtitlePlayer.SubtitleLine[] subtitleLines;
+
     [Tooltip("场景段 A（先播放）")]
     public SceneSegment segmentA;
 
