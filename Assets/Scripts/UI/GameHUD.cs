@@ -26,6 +26,9 @@ public class GameHUD : MonoBehaviour
     [Header("护盾")]
     [SerializeField] private GameObject shieldIndicator;    // 护盾激活时显示的 UI 元素
 
+    [Header("设置")]
+    [SerializeField] private Button settingsButton;
+
     void OnEnable()
     {
         EventBus.Subscribe(GameEvents.PlayerHit,          OnPlayerHit);
@@ -56,6 +59,12 @@ public class GameHUD : MonoBehaviour
         UpdateHearts(3);
         UpdateCrowns(0);
         if (shieldIndicator) shieldIndicator.SetActive(false);
+
+        if (settingsButton)
+            settingsButton.onClick.AddListener(() =>
+            {
+                if (SettingsUI.Instance) SettingsUI.Instance.Show(pauseGame: true);
+            });
     }
 
     void OnPlayerHit(object data)

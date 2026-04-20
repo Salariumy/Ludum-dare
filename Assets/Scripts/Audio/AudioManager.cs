@@ -58,6 +58,21 @@ public class AudioManager : MonoBehaviour
     private bool gameplaySfxBlocked;
     private readonly HashSet<int> boundButtonIds = new HashSet<int>();
 
+    // ───── 运行时音量（可被 Settings 修改）─────
+    private float runtimeBgmVolume;
+    private float runtimeSfxVolume;
+    private const string PrefKeyBGM = "Settings_BGMVolume";
+    private const string PrefKeySFX = "Settings_SFXVolume";
+
+    /// <summary>默认 BGM 音量（Inspector 设定值）</summary>
+    public float DefaultBgmVolume => bgmVolume;
+    /// <summary>默认 SFX 音量（Inspector 设定值）</summary>
+    public float DefaultSfxVolume => sfxVolume;
+    /// <summary>当前运行时 BGM 音量</summary>
+    public float RuntimeBgmVolume => runtimeBgmVolume;
+    /// <summary>当前运行时 SFX 音量</summary>
+    public float RuntimeSfxVolume => runtimeSfxVolume;
+
     // ══════════════════════════════════════════
     //  生命周期
     // ══════════════════════════════════════════
@@ -80,6 +95,10 @@ public class AudioManager : MonoBehaviour
         sfxPool = new List<AudioSource>(sfxPoolSize);
         for (int i = 0; i < sfxPoolSize; i++)
             sfxPool.Add(CreateAudioSource($"SFX_{i}", false));
+
+        // 加载持久化音量（首次使用 Inspector 默认值）
+        runtimeBgmVolume = PlayerPrefs.GetFloat(PrefKeyBGM, bgmVolume);
+        runtimeSfxVolume = PlayerPrefs.GetFloat(PrefKeySFX, sfxVolume);
     }
 
     void OnEnable()
@@ -145,6 +164,39 @@ public class AudioManager : MonoBehaviour
     /// <summary>播放按钮点击音效（统一使用频段切换音效）</summary>
     public void PlayUIButtonClick()    => PlaySFX(sfxFrequencyShift);
 
+    // ══════════════════════════════════════════
+    //  音量控制（供 SettingsUI 调用）
+    // ══════════════════════════════════════════
+
+    /// <summary>设置 BGM 音量（0~1），立即生效</summary>
+    public void SetBgmVolume(float vol)
+    {
+        runtimeBgmVolume = Mathf.Clamp01(vol);
+        if (activeBgmSource && activeBgmSource.isPlaying)
+            activeBgmSource.volume = runtimeBgmVolume;
+    }
+
+    /// <summary>设置 SFX 音量（0~1），立即生效</summary>
+    public void SetSfxVolume(float vol)
+    {
+        runtimeSfxVolume = Mathf.Clamp01(vol);
+    }
+
+    /// <summary>将当前音量写入 PlayerPrefs 持久化</summary>
+    public void SaveVolumeSettings()
+    {
+        PlayerPrefs.SetFloat(PrefKeyBGM, runtimeBgmVolume);
+        PlayerPrefs.SetFloat(PrefKeySFX, runtimeSfxVolume);
+        PlayerPrefs.Save();
+    }
+
+    /// <summary>重置为 Inspector 默认值</summary>
+    public void ResetVolumeToDefault()
+    {
+        SetBgmVolume(bgmVolume);
+        SetSfxVolume(sfxVolume);
+    }
+
     /// <summary>控制是否屏蔽游戏流程音效（Intro 面板期间建议开启）</summary>
     public void SetGameplaySfxBlocked(bool blocked)
     {
@@ -159,7 +211,7 @@ public class AudioManager : MonoBehaviour
         if (typingAudioSource.isPlaying)
             typingAudioSource.Stop();
         typingAudioSource.clip = sfxTyping;
-        typingAudioSource.volume = sfxVolume;
+        typingAudioSource.volume = runtimeSfxVolume;
         typingAudioSource.pitch = 1f;
         typingAudioSource.Play();
     }
@@ -257,7 +309,7 @@ public class AudioManager : MonoBehaviour
 
         var source = GetFreeSFXSource();
         source.clip   = clip;
-        source.volume = sfxVolume;
+        source.volume = runtimeSfxVolume;
         source.pitch  = 1f;
         source.Play();
     }
@@ -269,7 +321,7 @@ public class AudioManager : MonoBehaviour
 
         var source = GetFreeSFXSource();
         source.clip   = clip;
-        source.volume = volume;
+        source.volume = volume * (runtimeSfxVolume / Mathf.Max(sfxVolume, 0.01f));
         source.pitch  = pitch;
         source.Play();
     }
@@ -312,14 +364,14 @@ public class AudioManager : MonoBehaviour
         {
             timer += Time.unscaledDeltaTime;
             float t = timer / bgmFadeDuration;
-            oldSource.volume = Mathf.Lerp(bgmVolume, 0f, t);
-            newSource.volume = Mathf.Lerp(0f, bgmVolume, t);
+            oldSource.volume = Mathf.Lerp(runtimeBgmVolume, 0f, t);
+            newSource.volume = Mathf.Lerp(0f, runtimeBgmVolume, t);
             yield return null;
         }
 
         oldSource.Stop();
         oldSource.volume = 0f;
-        newSource.volume = bgmVolume;
+        newSource.volume = runtimeBgmVolume;
     }
 
     private IEnumerator FadeOut(AudioSource source, float duration)

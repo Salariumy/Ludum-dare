@@ -19,6 +19,9 @@ public class MainMenuUI : MonoBehaviour
     [SerializeField] private GameObject guidePanel;
     [SerializeField] private Button guideCloseButton;
 
+    [Header("设置")]
+    [SerializeField] private Button settingsButton;
+
     void Start()
     {
         // 进入游戏时暂停，等待玩家从菜单选择
@@ -33,6 +36,12 @@ public class MainMenuUI : MonoBehaviour
             int idx = i;
             levelButtons[i].onClick.AddListener(() => StartGame(idx));
         }
+
+        if (settingsButton)
+            settingsButton.onClick.AddListener(() =>
+            {
+                if (SettingsUI.Instance) SettingsUI.Instance.Show(false);
+            });
     }
 
     void StartGame(int levelIndex)

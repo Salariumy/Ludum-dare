@@ -77,6 +77,11 @@ public class GameOverUI : MonoBehaviour
         
         yield return new WaitForSeconds(delayBeforeShow);
 
+        // 停止打字机（防止打字音效与结算音效混杂）
+        if (AudioManager.Instance) AudioManager.Instance.StopTyping();
+        var typingEffect = FindObjectOfType<TypingEffect>(true);
+        if (typingEffect) typingEffect.Clear();
+
         // 动画播完后暂停游戏并弹窗
         Time.timeScale = 0f;
         
