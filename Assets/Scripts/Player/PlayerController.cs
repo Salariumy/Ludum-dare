@@ -7,7 +7,7 @@ public enum SignalFrequency { High, Low }
 public class PlayerController : MonoBehaviour
 {
     [Header("自动移动")]
-    [SerializeField] private float moveSpeed = 5f;
+    [SerializeField]  private float moveSpeed = 5f;
 
     [Header("跳跃")]
     [SerializeField] private float     jumpForce          = 11f;
@@ -49,6 +49,7 @@ public class PlayerController : MonoBehaviour
     private float startX;
     private Coroutine shieldRoutine;
     private Vector3 spawnPosition;
+    private float timer = 0f;
 
     void Awake()
     {
@@ -109,6 +110,8 @@ public class PlayerController : MonoBehaviour
 
     void Update()
     {
+        timer += Time.deltaTime;
+        if(timer>20f) moveSpeed += Time.deltaTime * 0.018f;
         CheckGround();
         HandleJump();
         HandleFrequencySwitch();
