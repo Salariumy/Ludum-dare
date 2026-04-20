@@ -45,6 +45,15 @@ MonoBehaviour:
     coinAroundCount: 3
     coinAroundArcHeight: 0
     coinAroundSpacing: 1.5
+  - type: 3
+    hasFog: 1
+    isIndestructible: 1
+    coinCount: 8
+    arcHeight: 2.1
+    hasCoinAround: 0
+    coinAroundCount: 3
+    coinAroundArcHeight: 0
+    coinAroundSpacing: 1.5
   - type: 0
     hasFog: 1
     isIndestructible: 0
@@ -54,24 +63,6 @@ MonoBehaviour:
     coinAroundCount: 3
     coinAroundArcHeight: 0
     coinAroundSpacing: 1.5
-  - type: 3
-    hasFog: 1
-    isIndestructible: 1
-    coinCount: 8
-    arcHeight: 2.1
-    hasCoinAround: 0
-    coinAroundCount: 3
-    coinAroundArcHeight: 0
-    coinAroundSpacing: 1.5
-  - type: 0
-    hasFog: 1
-    isIndestructible: 0
-    coinCount: 8
-    arcHeight: 2.1
-    hasCoinAround: 1
-    coinAroundCount: 3
-    coinAroundArcHeight: 0
-    coinAroundSpacing: 1.5
   - type: 0
     hasFog: 0
     isIndestructible: 1
@@ -80,24 +71,6 @@ MonoBehaviour:
     hasCoinAround: 0
     coinAroundCount: 3
     coinAroundArcHeight: 1.8
-    coinAroundSpacing: 1.5
-  - type: 0
-    hasFog: 0
-    isIndestructible: 1
-    coinCount: 8
-    arcHeight: 0
-    hasCoinAround: 1
-    coinAroundCount: 2
-    coinAroundArcHeight: 1.8
-    coinAroundSpacing: 1.5
-  - type: 3
-    hasFog: 1
-    isIndestructible: 0
-    coinCount: 8
-    arcHeight: 2.1
-    hasCoinAround: 0
-    coinAroundCount: 3
-    coinAroundArcHeight: 0
     coinAroundSpacing: 1.5
   - type: 0
     hasFog: 1
@@ -115,6 +88,33 @@ MonoBehaviour:
     arcHeight: 2.1
     hasCoinAround: 1
     coinAroundCount: 2
+    coinAroundArcHeight: 0
+    coinAroundSpacing: 1.5
+  - type: 0
+    hasFog: 0
+    isIndestructible: 1
+    coinCount: 8
+    arcHeight: 0
+    hasCoinAround: 1
+    coinAroundCount: 2
+    coinAroundArcHeight: 1.8
+    coinAroundSpacing: 1.5
+  - type: 0
+    hasFog: 1
+    isIndestructible: 0
+    coinCount: 8
+    arcHeight: 2.1
+    hasCoinAround: 1
+    coinAroundCount: 3
+    coinAroundArcHeight: 0
+    coinAroundSpacing: 1.5
+  - type: 3
+    hasFog: 1
+    isIndestructible: 0
+    coinCount: 8
+    arcHeight: 2.1
+    hasCoinAround: 0
+    coinAroundCount: 3
     coinAroundArcHeight: 0
     coinAroundSpacing: 1.5
   - type: 0
@@ -153,18 +153,18 @@ MonoBehaviour:
     coinAroundCount: 3
     coinAroundArcHeight: 0
     coinAroundSpacing: 1.5
-  - type: 2
+  - type: 0
     hasFog: 1
-    isIndestructible: 0
+    isIndestructible: 1
     coinCount: 8
     arcHeight: 2.1
     hasCoinAround: 0
     coinAroundCount: 3
     coinAroundArcHeight: 0
     coinAroundSpacing: 1.5
-  - type: 0
+  - type: 2
     hasFog: 1
-    isIndestructible: 1
+    isIndestructible: 0
     coinCount: 8
     arcHeight: 2.1
     hasCoinAround: 0
