@@ -53,4 +53,17 @@ public class LevelData : ScriptableObject
 
     [Tooltip("该关卡的生成序列（控制障碍物/金币/宝箱/皇冠出现顺序）")]
     public SpawnPattern spawnPattern;
+
+    [Header("最终关卡配置")]
+    [Tooltip("勾选后启用最终关特殊逻辑（手动移动/照片收集/无伤害）")]
+    public bool isFinalLevel;
+
+    [Tooltip("5张彩色照片（收集后显示）")]
+    public Sprite[] photoSprites;
+
+    [Tooltip("照片泡泡预制体")]
+    public GameObject photoBubblePrefab;
+
+    [Tooltip("小猫预制体（收集完全部照片后出现）")]
+    public GameObject catPrefab;
 }
